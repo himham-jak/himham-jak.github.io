@@ -570,11 +570,11 @@ async function set_sbv2(blob) {
 	
 	let num_midis = sbv2.tracks.length;
 		
-	let savemus_button = document.createElement("input");
-	savemus_button.type = "button";
-	savemus_button.value = "Save as .MUS";
+	//let savemus_button = document.createElement("input");
+	//savemus_button.type = "button";
+	//savemus_button.value = "Save as .MUS";
 
-	contentelem.appendChild(savemus_button);
+	//contentelem.appendChild(savemus_button);
 	
 	for(let i = 0; i < num_midis; i++) { // Yes, I'm skipping track zero. Track zero doesn't have anything useful. At least not for this thing.
 		let track = sbv2.tracks[i];
