@@ -569,6 +569,13 @@ async function set_sbv2(blob) {
 	dispose_old = ()=>{if(stop_playing) stop_playing();};
 	
 	let num_midis = sbv2.tracks.length;
+		
+	let savemus_button = document.createElement("input");
+	savemus_button.type = "button";
+	savemus_button.value = "Save as .MUS";
+
+	contentelem.appendChild(savemus_button);
+	
 	for(let i = 0; i < num_midis; i++) { // Yes, I'm skipping track zero. Track zero doesn't have anything useful. At least not for this thing.
 		let track = sbv2.tracks[i];
 		
@@ -1145,6 +1152,14 @@ Sound length: ${sound_length}
 			});
 			button.style.marginLeft = "40px";
 			contentelem.appendChild(button);
+			
+			let button2 = document.createElement("input");
+			button2.type = "button";
+			button2.value = "Replace";
+			let source = null;
+			
+			button2.style.marginLeft = "40px";
+			contentelem.appendChild(button2);
 		}
 	}
 }
