@@ -362,7 +362,7 @@ async function load_gamefile() {
 		convolver_node.buffer = convolver_buffer;
 	});
 	
-	document.getElementById("loadmenu").style.display = "none";
+	//document.getElementById("loadmenu").style.display = "none";
 	infile = document.getElementById("fileinput").files[0];
 	let filelistelem = document.getElementById("filelist");
 	
@@ -4121,7 +4121,7 @@ canvas {
 <div id="content">
 </div>
 <div id="loadmenu">
-	<div>Please select the MUS file off the game disk.1</div>
+	<div>Please select the MUS file off the game disk.</div>
 	<input type="file" id="fileinput">
 	<input type="button" onclick="load_gamefile()" value="Load">
 </div>
