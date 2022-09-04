@@ -821,6 +821,12 @@ async function set_sbv2(blob) {
 		});
 		contentelem.appendChild(savemid_button);
 		
+		let insertmid_button = document.createElement("input");
+		insertmid_button.type = "button";
+		insertmid_button.value = "Replace .mid";
+		
+		contentelem.appendChild(insertmid_button);
+		
 		let vis_button = document.createElement("input");
 		vis_button.type = "button";
 		vis_button.value = "Save Visualisation (.ply)";
