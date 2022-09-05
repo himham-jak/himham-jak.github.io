@@ -1719,8 +1719,8 @@ async function set_vagp(blob) {
 	contentelem.innerHTML = "";
 	
 	// unlike literally everything else this format uses big endian instead of little endian.
-	let sound_start = 0x30;
-	let sound_length = dv.getUint32(0x0C, false);
+	let sound_start = 0x30; // 0x30
+	let sound_length = dv.getUint32(0x0C, false); // 0x0C
 	let sample_rate = dv.getUint32(0x10, false);
 	
 	let pre = document.createElement("pre");
