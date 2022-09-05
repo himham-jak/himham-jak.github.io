@@ -5,7 +5,7 @@ Version 2 -->
 
 <html>
 <head>
-<title>.MUS/VAGWAD Editor</title>
+<title>MUS/VAGWAD Editor</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -1740,7 +1740,7 @@ async function set_vagp(blob) {
 		let sound_offset	= dv.getUint32(start_point + 8, false);		// additional offset for sound_start? (should be 0)
 		let sound_length	= dv.getUint32(start_point + 12, false);	// length in bytes
 		let sample_rate		= dv.getUint32(start_point + 16, false);	// sample rate in hz
-		let track_name		= String.fromCharCode(start_point + 32);	// track name
+		let track_name		= String.fromCharCode(dv.getUint16(start_point + 32));	// track name
 		let sound_start		= start_point + 48;				// sound data start
 		let sound_end		= sound_start + sound_length;			// sound data end
 
