@@ -5,7 +5,7 @@ Version 2 -->
 
 <html>
 <head>
-<title>MUS/VAGWAD Editor</title>
+<title>MUS/VAGWAD Editor.</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -1720,13 +1720,26 @@ async function set_vagp(blob) {
 	let contentelem = document.getElementById("content");
 	contentelem.innerHTML = "";
 	
+	function findVAGp(element, index, array) {
+	  return (
+	    array[index] == 0x56 &&
+	    array[index+1] == 0x41 &&
+	    array[index+2] == 0x47 &&
+	    array[index+3] == 0x70
+	  );
+	}
+	
+	// find an instance of "VAGp" in the file after idx
+	idx = 0;
+	idx = file.slice(idx).findIndex(findVAGp);
+	
 	// new pointers/values based on https://wiki.xentax.com/index.php/VAG_Audio
-	let start_point		= 0xEF800;						// beginning of first "VAGp"
+	let start_point		= idx;						// idx of "VAGp"
 	let version		= dv.getUint32(start_point + 4, false);		// version (should be 2)
 	let sound_offset	= dv.getUint32(start_point + 8, false);		// additional offset for sound_start? (should be 0)
 	let sound_length	= dv.getUint32(start_point + 12, false);	// length in bytes
 	let sample_rate		= dv.getUint32(start_point + 16, false);	// sample rate in hz
-	//let track_name		= dv.getString???(start_point + 32);	// track name
+	//let track_name		= String.fromCharCode ??? (start_point + 32);	// track name
 	let sound_start		= start_point + 48;				// sound data start
 	let sound_end		= sound_start + sound_length;			// sound data end
 	
@@ -1736,7 +1749,7 @@ async function set_vagp(blob) {
 	//let sample_rate = dv.getUint32(0x10, false);
 	
 	let pre = document.createElement("pre");
-	pre.textContent = `Sound length: ${sound_length} bytes, ${(sound_length * 24 / 16 / sample_rate).toFixed(3)} seconds
+	pre.textContent = `Start: ${start_point}, Sound length: ${sound_length} bytes, ${(sound_length * 24 / 16 / sample_rate).toFixed(3)} seconds
 Sample rate: ${sample_rate} Hz`;
 	contentelem.appendChild(pre);
 	
