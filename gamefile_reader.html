@@ -5,7 +5,7 @@ Version 2 -->
 
 <html>
 <head>
-<title>MUS/VAGWAD Editor</title>
+<title>.MUS/VAGWAD Editor</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -1729,35 +1729,35 @@ async function set_vagp(blob) {
 	  );
 	}
 	
-	// find an instance of "VAGp" in the file after idx
-	idx = 0xEF700;
-	idx = file.slice(idx).findIndex(findVAGp)+idx;
-	
-	// new pointers/values based on https://wiki.xentax.com/index.php/VAG_Audio
-	let start_point		= idx;						// idx of "VAGp"
-	let version		= dv.getUint32(start_point + 4, false);		// version (should be 2)
-	let sound_offset	= dv.getUint32(start_point + 8, false);		// additional offset for sound_start? (should be 0)
-	let sound_length	= dv.getUint32(start_point + 12, false);	// length in bytes
-	let sample_rate		= dv.getUint32(start_point + 16, false);	// sample rate in hz
-	//let track_name		= String.fromCharCode ??? (start_point + 32);	// track name
-	let sound_start		= start_point + 48;				// sound data start
-	let sound_end		= sound_start + sound_length;			// sound data end
-	
-	// unlike literally everything else this format uses big endian instead of little endian.
-	//let sound_start = 0x30;
-	//let sound_length = dv.getUint32(0x0C, false);
-	//let sample_rate = dv.getUint32(0x10, false);
-	
-	let pre = document.createElement("pre");
-	pre.textContent = `Start: ${start_point}, Sound length: ${sound_length} bytes, ${(sound_length * 24 / 16 / sample_rate).toFixed(3)} seconds
-Sample rate: ${sample_rate} Hz`;
-	contentelem.appendChild(pre);
-	
-	let sound = decode_adpcm(file, sound_start, sound_end, sample_rate);
-	let source = audio_context.createBufferSource();
-	source.buffer = sound.buffer;
-	source.connect(audio_context.destination);
-	source.start();
+	for(idx = 0; idx < file.length; idx++) {	
+		// find an instance of "VAGp" in the file after idx
+		idx = file.slice(idx).findIndex(findVAGp)+idx;
+
+		// new pointers/values based on https://wiki.xentax.com/index.php/VAG_Audio
+		let start_point		= idx;						// idx of "VAGp"
+		let version		= dv.getUint32(start_point + 4, false);		// version (should be 2)
+		let sound_offset	= dv.getUint32(start_point + 8, false);		// additional offset for sound_start? (should be 0)
+		let sound_length	= dv.getUint32(start_point + 12, false);	// length in bytes
+		let sample_rate		= dv.getUint32(start_point + 16, false);	// sample rate in hz
+		//let track_name		= String.fromCharCode ??? (start_point + 32);	// track name
+		let sound_start		= start_point + 48;				// sound data start
+		let sound_end		= sound_start + sound_length;			// sound data end
+
+		// unlike literally everything else this format uses big endian instead of little endian.
+		//let sound_start = 0x30;
+		//let sound_length = dv.getUint32(0x0C, false);
+		//let sample_rate = dv.getUint32(0x10, false);
+
+		let pre = document.createElement("pre");
+		pre.textContent = `Start: ${start_point}, Sound length: ${sound_length} bytes, ${(sound_length * 24 / 16 / sample_rate).toFixed(3)} seconds, Sample rate: ${sample_rate} Hz\n`;
+		contentelem.appendChild(pre);
+
+		let sound = decode_adpcm(file, sound_start, sound_end, sample_rate);
+		let source = audio_context.createBufferSource();
+		source.buffer = sound.buffer;
+		source.connect(audio_context.destination);
+		source.start();
+	}
 }
 
 async function set_kpv(blob) {
