@@ -5,7 +5,7 @@ Version 2 -->
 
 <html>
 <head>
-<title>MUS/VAGWAD Editor</title>
+<title>.MUS/VAGWAD Editor</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -1731,7 +1731,7 @@ async function set_vagp(blob) {
 	
 	// find an instance of "VAGp" in the file after idx
 	idx = 0x01;
-	idx = file.slice(idx).findIndex(findVAGp);
+	idx = file.slice(idx).findIndex(findVAGp)+idx;
 	
 	// new pointers/values based on https://wiki.xentax.com/index.php/VAG_Audio
 	let start_point		= idx;						// idx of "VAGp"
