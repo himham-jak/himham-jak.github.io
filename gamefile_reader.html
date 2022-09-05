@@ -2,7 +2,7 @@
 
 <html>
 <head>
-<title>MUS Editor</title>
+<title>MUS Editor.</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -355,7 +355,7 @@ for(let i = 0; i < 160; i++) {
 	adsr_rates[i] = Math.min(rate, 0x3FFFFFFF);
 }
 
-async function load_gamefile() {
+async function load_gamefile(num) {
 	audio_context = new AudioContext({sampleRate: 48000}); // the PS2 SPU runs at 48 kHz
 	
 	convolver_node = audio_context.createConvolver();
@@ -368,176 +368,178 @@ async function load_gamefile() {
 	//document.getElementById("loadmenu").style.display = "none";
 	document.getElementById("savemenu").style.display = "inline";
 	
-	infile = document.getElementById("fileinput").files[0];
-	let filelistelem = document.getElementById("filelist");
-	
-	let this_sectors = file_sectors;
-	let this_sizes = file_sizes;
-	if(infile.size == 156485632) {
-		do_log("Using demo sectors");
-		this_sectors = demo_file_sectors;
-		this_sizes = demo_file_sizes;
-	} else if(infile.size == 1902393344) {
-		do_log("Using Oct. 13 prototype build sectors");
-		this_sectors = oct13_file_sectors;
-		this_sizes = oct13_file_sizes;
-	} else if(infile.size != 1902385152) {
-		this_sectors = [0];
-		this_sizes = [Math.ceil(infile.size / 2048)];
-	} else {
-		do_log("Using retail sectors");
-	}
-	
-	for(let i = 0; i < this_sectors.length; i++) {
-		let index_string = ""; //"0x"+i.toString(16).padStart(4,0);
-		let fileelem = document.createElement("div");
-		filelistelem.appendChild(fileelem);
-		if(this_sizes[i] == 0) {
-			fileelem.textContent = index_string+": Empty";
-			file_list.push(null);
+	for (let i=0; i < document.getElementById("fileinput").files.length; i++) {
+		infile = document.getElementById("fileinput").files[i];
+		let filelistelem = document.getElementById("filelist");
+
+		let this_sectors = file_sectors;
+		let this_sizes = file_sizes;
+		if(infile.size == 156485632) {
+			do_log("Using demo sectors");
+			this_sectors = demo_file_sectors;
+			this_sizes = demo_file_sizes;
+		} else if(infile.size == 1902393344) {
+			do_log("Using Oct. 13 prototype build sectors");
+			this_sectors = oct13_file_sectors;
+			this_sizes = oct13_file_sizes;
+		} else if(infile.size != 1902385152) {
+			this_sectors = [0];
+			this_sizes = [Math.ceil(infile.size / 2048)];
 		} else {
-			let part_header_blob = infile.slice(this_sectors[i]*2048, this_sectors[i]*2048+48);
-			let part_header = new Uint8Array(await new Response(part_header_blob).arrayBuffer());
-			if(part_header[0] == 0x49 && part_header[1] == 0x44 && part_header[2] == 0x4D) {
-				fileelem.textContent = index_string+": IDM";
-				let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
-				let part = new Uint8Array(await new Response(part_blob).arrayBuffer());
-				let part_dv = new DataView(part.buffer);
-				let curr_addr = 0;
-				let file_entry = [];
-				file_list.push(file_entry);
-				let indent = 0;
-				while(curr_addr < part.length) {
-					if(part[curr_addr] == 0x49 && part[curr_addr+1] == 0x44 && part[curr_addr+2] == 0x4D) {
-						if(!(function add_file(file_addr, do_adjust = true) {
-							let absolute_offset = file_addr + this_sectors[i]*2048;
-							let size = part_dv.getInt32(file_addr+8, true);
-							let header_size = part_dv.getInt16(file_addr+6, true) + 16;
-							let sub_blob = part_blob.slice(file_addr, file_addr+size);
-							let partelem = document.createElement("div");
-							filelist.appendChild(partelem);
-							let globalid = (part[file_addr+14] + part[file_addr+15] * 256);
-							let tc = "\xa0\xa0IDM " + part[file_addr+3].toString(16) + " " + part[file_addr+4].toString(16) + " " + part[file_addr+5].toString(16) + "[" + (part[file_addr+4] + part[file_addr+5] * 256) + "]" + (globalid ? "{" + globalid + "}" : "");
-							for(let i = 0; i < indent; i++) {
-								tc = "\xa0\xa0" + tc;
-							}
-							let this_indent = indent;
-							let ident = [part[file_addr+3],part[file_addr+4],part[file_addr+5]];
-							if(ident[0] == 4 && ident[1] == 4 && ident[2] == 0) {
-								tc += " (Texture)";
-							} else if(ident[0] == 1 && ident[1] == 0 && ident[2] == 0) {
-								tc += " (EOF)";
-								if(indent > 0)
-									indent--;
-							} else if(ident[0] == 4 && ident[1] == 0x25 && ident[2] == 0) {
-								tc += " (Script)";
-							} else if(ident[0] == 1 && ident[1] == 0x13 && ident[2] == 0) {
-								tc += " (Zone Map)";
-							} else if(ident[0] == 1 && (ident[1] == 0x12 || ident[1] == 0x20 || ident[1] == 0x8) && ident[2] == 0) {
-								if(part[file_addr+header_size] == 0x49 && part[file_addr+header_size+1] == 0x44 && part[file_addr+header_size+2] == 0x4D) {
-									size = header_size;
-									indent++;
-								}
-							} else if(ident[0] == 1 && ident[1] == 0x1D && ident[2] == 0) {
-								tc += " (Object Pack)"
-							} else if(ident[0] == 1 && ident[1] == 0xD && ident[2] == 0) {
-								tc += " (Model)";
-							} else if(ident[0] == 1 && ident[1] == 0x3 && ident[2] == 0) {
-								tc += " (Map Geometry)";
-							} else if(ident[0] == 1 && ident[1] == 0x2 && ident[2] == 0) {
-								tc += " (Material List)";
-							}
-							partelem.textContent = tc;
-							if(size <= 0) {
-								console.warn(size + " size at file " + i);
-								return false;
-							}
-							if(do_adjust)
-								curr_addr += size;
-							partelem.addEventListener("click", (e) => {
-								open_tab(sub_blob, file_entry, e.ctrlKey);
-							});
-							file_entry.push({blob: sub_blob, ident, size, indent: this_indent, offset: absolute_offset});
-							if(ident[0] == 1 && ident[1] == 0x1D && ident[2] == 0) {
-								indent += 2;
-								let arr1_size = part_dv.getUint32(file_addr+header_size, true);
-								let arr1_addr = part_dv.getUint32(file_addr+header_size + 0x4, true) + header_size+file_addr;
-								for(let i = 0; i < arr1_size; i++) {
-									let item_div = document.createElement("div");
-									filelist.appendChild(item_div);
-									item_div.textContent = "".padStart(indent*2, "\xa0") + i + ":";
-									let item_elem = part_dv.getUint32(arr1_addr + i*4, true);
-									if(!item_elem) continue;
-									item_elem += header_size+file_addr;
-									let model_addr = part_dv.getUint32(item_elem + 0x1d0, true);
-									let other_addr = part_dv.getUint32(item_elem + 0x1d4, true);
-									//do_log(model_addr + ", " + other_addr);
-									if(model_addr) add_file(model_addr + header_size+file_addr, false);
-									if(other_addr) add_file(other_addr + header_size+file_addr, false);
-								}
-								indent -= 2;
-							}
-							open_tab(sub_blob, file_entry, false); // TODO my hope was that putting this here would run it automatically but apparently not :(
-							return true;
-						})(curr_addr)) break;
-					} else {
-						if(curr_addr % 2048 == 0) {
-							curr_addr += 2048;
-						} else {
-							curr_addr = Math.ceil(curr_addr / 2048) * 2048
-						}
-					}
-				}
-			} else {
-				if(part_header[24] == 0x53 && part_header[25] == 0x42 && part_header[26] == 0x6C && part_header[27] == 0x6B) {
-					fileelem.textContent = index_string+": Sound bank (" + (part_header[0x2e] + (part_header[0x2f] * 256)) + " sounds)";
-					let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
-					fileelem.addEventListener("click", (e) => {
-						for(let othersel of document.querySelectorAll(".file-item-selected")) {
-							othersel.classList.remove("file-item-selected");
-						}
-						fileelem.classList.add("file-item-selected");
-						set_sblk(part_blob);
-					});
-				} else if(part_header[32] == 0x53 && part_header[33] == 0x42 && part_header[34] == 0x76 && part_header[35] == 0x32) {
-					fileelem.textContent = index_string+"Music File: \"" + [...part_header.slice(44,48)].map((cc)=>{return String.fromCharCode(cc);}).join("") + "\" from " + infile.name;
-					let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
-					fileelem.addEventListener("click", (e) => {
-						for(let othersel of document.querySelectorAll(".file-item-selected")) {
-							othersel.classList.remove("file-item-selected");
-						}
-						fileelem.classList.add("file-item-selected");
-						set_sbv2(part_blob);
-					});
-				} else if(part_header[0] == 0x56 && part_header[1] == 0x41 && part_header[2] == 0x47 && part_header[3] == 0x70) {
-					let title = "";
-					for(let i = 32; i < 48; i++) {
-						if(part_header[i] == 0) break;
-						title += String.fromCharCode(part_header[i]);
-					}
-					fileelem.textContent = index_string+": VAGp sound \"" + title + "\"";
-					let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
-					fileelem.addEventListener("click", (e) => {
-						for(let othersel of document.querySelectorAll(".file-item-selected")) {
-							othersel.classList.remove("file-item-selected");
-						}
-						fileelem.classList.add("file-item-selected");
-						set_vagp(part_blob);
-					});
-				} else if(part_header[0] == 0x20 && part_header[1] == 0x4B && part_header[2] == 0x50 && part_header[3] == 0x56) {
-					fileelem.textContent = index_string+": KPV audio";
-					let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
-					fileelem.addEventListener("click", (e) => {
-						for(let othersel of document.querySelectorAll(".file-item-selected")) {
-							othersel.classList.remove("file-item-selected");
-						}
-						fileelem.classList.add("file-item-selected");
-						set_kpv(part_blob);
-					});
-				} else {
-					fileelem.textContent = index_string+": Unknown File";
-				}
+			do_log("Using retail sectors");
+		}
+
+		for(let i = 0; i < this_sectors.length; i++) {
+			let index_string = ""; //"0x"+i.toString(16).padStart(4,0);
+			let fileelem = document.createElement("div");
+			filelistelem.appendChild(fileelem);
+			if(this_sizes[i] == 0) {
+				fileelem.textContent = index_string+": Empty";
 				file_list.push(null);
+			} else {
+				let part_header_blob = infile.slice(this_sectors[i]*2048, this_sectors[i]*2048+48);
+				let part_header = new Uint8Array(await new Response(part_header_blob).arrayBuffer());
+				if(part_header[0] == 0x49 && part_header[1] == 0x44 && part_header[2] == 0x4D) {
+					fileelem.textContent = index_string+": IDM";
+					let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
+					let part = new Uint8Array(await new Response(part_blob).arrayBuffer());
+					let part_dv = new DataView(part.buffer);
+					let curr_addr = 0;
+					let file_entry = [];
+					file_list.push(file_entry);
+					let indent = 0;
+					while(curr_addr < part.length) {
+						if(part[curr_addr] == 0x49 && part[curr_addr+1] == 0x44 && part[curr_addr+2] == 0x4D) {
+							if(!(function add_file(file_addr, do_adjust = true) {
+								let absolute_offset = file_addr + this_sectors[i]*2048;
+								let size = part_dv.getInt32(file_addr+8, true);
+								let header_size = part_dv.getInt16(file_addr+6, true) + 16;
+								let sub_blob = part_blob.slice(file_addr, file_addr+size);
+								let partelem = document.createElement("div");
+								filelist.appendChild(partelem);
+								let globalid = (part[file_addr+14] + part[file_addr+15] * 256);
+								let tc = "\xa0\xa0IDM " + part[file_addr+3].toString(16) + " " + part[file_addr+4].toString(16) + " " + part[file_addr+5].toString(16) + "[" + (part[file_addr+4] + part[file_addr+5] * 256) + "]" + (globalid ? "{" + globalid + "}" : "");
+								for(let i = 0; i < indent; i++) {
+									tc = "\xa0\xa0" + tc;
+								}
+								let this_indent = indent;
+								let ident = [part[file_addr+3],part[file_addr+4],part[file_addr+5]];
+								if(ident[0] == 4 && ident[1] == 4 && ident[2] == 0) {
+									tc += " (Texture)";
+								} else if(ident[0] == 1 && ident[1] == 0 && ident[2] == 0) {
+									tc += " (EOF)";
+									if(indent > 0)
+										indent--;
+								} else if(ident[0] == 4 && ident[1] == 0x25 && ident[2] == 0) {
+									tc += " (Script)";
+								} else if(ident[0] == 1 && ident[1] == 0x13 && ident[2] == 0) {
+									tc += " (Zone Map)";
+								} else if(ident[0] == 1 && (ident[1] == 0x12 || ident[1] == 0x20 || ident[1] == 0x8) && ident[2] == 0) {
+									if(part[file_addr+header_size] == 0x49 && part[file_addr+header_size+1] == 0x44 && part[file_addr+header_size+2] == 0x4D) {
+										size = header_size;
+										indent++;
+									}
+								} else if(ident[0] == 1 && ident[1] == 0x1D && ident[2] == 0) {
+									tc += " (Object Pack)"
+								} else if(ident[0] == 1 && ident[1] == 0xD && ident[2] == 0) {
+									tc += " (Model)";
+								} else if(ident[0] == 1 && ident[1] == 0x3 && ident[2] == 0) {
+									tc += " (Map Geometry)";
+								} else if(ident[0] == 1 && ident[1] == 0x2 && ident[2] == 0) {
+									tc += " (Material List)";
+								}
+								partelem.textContent = tc;
+								if(size <= 0) {
+									console.warn(size + " size at file " + i);
+									return false;
+								}
+								if(do_adjust)
+									curr_addr += size;
+								partelem.addEventListener("click", (e) => {
+									open_tab(sub_blob, file_entry, e.ctrlKey);
+								});
+								file_entry.push({blob: sub_blob, ident, size, indent: this_indent, offset: absolute_offset});
+								if(ident[0] == 1 && ident[1] == 0x1D && ident[2] == 0) {
+									indent += 2;
+									let arr1_size = part_dv.getUint32(file_addr+header_size, true);
+									let arr1_addr = part_dv.getUint32(file_addr+header_size + 0x4, true) + header_size+file_addr;
+									for(let i = 0; i < arr1_size; i++) {
+										let item_div = document.createElement("div");
+										filelist.appendChild(item_div);
+										item_div.textContent = "".padStart(indent*2, "\xa0") + i + ":";
+										let item_elem = part_dv.getUint32(arr1_addr + i*4, true);
+										if(!item_elem) continue;
+										item_elem += header_size+file_addr;
+										let model_addr = part_dv.getUint32(item_elem + 0x1d0, true);
+										let other_addr = part_dv.getUint32(item_elem + 0x1d4, true);
+										//do_log(model_addr + ", " + other_addr);
+										if(model_addr) add_file(model_addr + header_size+file_addr, false);
+										if(other_addr) add_file(other_addr + header_size+file_addr, false);
+									}
+									indent -= 2;
+								}
+								open_tab(sub_blob, file_entry, false); // TODO my hope was that putting this here would run it automatically but apparently not :(
+								return true;
+							})(curr_addr)) break;
+						} else {
+							if(curr_addr % 2048 == 0) {
+								curr_addr += 2048;
+							} else {
+								curr_addr = Math.ceil(curr_addr / 2048) * 2048
+							}
+						}
+					}
+				} else {
+					if(part_header[24] == 0x53 && part_header[25] == 0x42 && part_header[26] == 0x6C && part_header[27] == 0x6B) {
+						fileelem.textContent = index_string+": Sound bank (" + (part_header[0x2e] + (part_header[0x2f] * 256)) + " sounds)";
+						let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
+						fileelem.addEventListener("click", (e) => {
+							for(let othersel of document.querySelectorAll(".file-item-selected")) {
+								othersel.classList.remove("file-item-selected");
+							}
+							fileelem.classList.add("file-item-selected");
+							set_sblk(part_blob);
+						});
+					} else if(part_header[32] == 0x53 && part_header[33] == 0x42 && part_header[34] == 0x76 && part_header[35] == 0x32) {
+						fileelem.textContent = index_string+"Music File: \"" + [...part_header.slice(44,48)].map((cc)=>{return String.fromCharCode(cc);}).join("") + "\" from " + infile.name;
+						let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
+						fileelem.addEventListener("click", (e) => {
+							for(let othersel of document.querySelectorAll(".file-item-selected")) {
+								othersel.classList.remove("file-item-selected");
+							}
+							fileelem.classList.add("file-item-selected");
+							set_sbv2(part_blob);
+						});
+					} else if(part_header[0] == 0x56 && part_header[1] == 0x41 && part_header[2] == 0x47 && part_header[3] == 0x70) {
+						let title = "";
+						for(let i = 32; i < 48; i++) {
+							if(part_header[i] == 0) break;
+							title += String.fromCharCode(part_header[i]);
+						}
+						fileelem.textContent = index_string+": VAGp sound \"" + title + "\"";
+						let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
+						fileelem.addEventListener("click", (e) => {
+							for(let othersel of document.querySelectorAll(".file-item-selected")) {
+								othersel.classList.remove("file-item-selected");
+							}
+							fileelem.classList.add("file-item-selected");
+							set_vagp(part_blob);
+						});
+					} else if(part_header[0] == 0x20 && part_header[1] == 0x4B && part_header[2] == 0x50 && part_header[3] == 0x56) {
+						fileelem.textContent = index_string+": KPV audio";
+						let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
+						fileelem.addEventListener("click", (e) => {
+							for(let othersel of document.querySelectorAll(".file-item-selected")) {
+								othersel.classList.remove("file-item-selected");
+							}
+							fileelem.classList.add("file-item-selected");
+							set_kpv(part_blob);
+						});
+					} else {
+						fileelem.textContent = index_string+": Unknown File";
+					}
+					file_list.push(null);
+				}
 			}
 		}
 	}
