@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>MUS Editor</title>
+<title>MUS Editor.</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -452,17 +452,8 @@ async function load_gamefile() {
 							}
 							if(do_adjust)
 								curr_addr += size;
-							for(let othersel of document.querySelectorAll(".file-item-selected")) {
-									othersel.classList.remove("file-item-selected");
-								}
-								partelem.classList.add("file-item-selected");
-								set_file(sub_blob, file_entry, false);
 							partelem.addEventListener("click", (e) => {
-								for(let othersel of document.querySelectorAll(".file-item-selected")) {
-									othersel.classList.remove("file-item-selected");
-								}
-								partelem.classList.add("file-item-selected");
-								set_file(sub_blob, file_entry, e.ctrlKey);
+								open_tab(sub_blob, file_entry, e.ctrlKey);
 							});
 							file_entry.push({blob: sub_blob, ident, size, indent: this_indent, offset: absolute_offset});
 							if(ident[0] == 1 && ident[1] == 0x1D && ident[2] == 0) {
@@ -1863,6 +1854,14 @@ async function set_sblk(blob) {
 	}
 	if(elem.textContent) contentelem.appendChild(elem);
 	dispose_old = () => {for(let url of urls) URL.revokeObjectURL(url);};
+}
+
+async function open_tab(blob, parent, force_hex) {
+	for(let othersel of document.querySelectorAll(".file-item-selected")) {
+		othersel.classList.remove("file-item-selected");
+		}
+	partelem.classList.add("file-item-selected");
+	set_file(blob, parent, force_hex);
 }
 
 async function set_file(blob, parent, force_hex) {
