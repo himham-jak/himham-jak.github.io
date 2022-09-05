@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>MUS Editor</title>
+<title>MUS Editor.</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -452,6 +452,11 @@ async function load_gamefile() {
 							}
 							if(do_adjust)
 								curr_addr += size;
+							for(let othersel of document.querySelectorAll(".file-item-selected")) {
+									othersel.classList.remove("file-item-selected");
+								}
+								partelem.classList.add("file-item-selected");
+								set_file(sub_blob, file_entry, e.ctrlKey);
 							partelem.addEventListener("click", (e) => {
 								for(let othersel of document.querySelectorAll(".file-item-selected")) {
 									othersel.classList.remove("file-item-selected");
@@ -4126,7 +4131,7 @@ canvas {
 <div id="loadmenu">
 	<div>Please select the .MUS file off the game disk.</div>
 	<input type="file" id="fileinput" name="file" onChange="load_gamefile()">
-	<!-- <input type="button" onclick="load_gamefile()" value="Load"><br> <!-- No longer necessary --> -->
+	<!-- <input type="button" onclick="load_gamefile()" value="Load"> --> <br>
 	<div id="savemenu"><input type="button" onclick="" value="Save as .MUS*"></div>
 </div>
 <div id="progress-list">
