@@ -1730,7 +1730,7 @@ async function set_vagp(blob) {
 	}
 	
 	// find an instance of "VAGp" in the file after idx
-	idx = 0xEF800;
+	idx = 0xEF700;
 	idx = file.slice(idx).findIndex(findVAGp)+idx;
 	
 	// new pointers/values based on https://wiki.xentax.com/index.php/VAG_Audio
