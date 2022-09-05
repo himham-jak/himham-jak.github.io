@@ -363,7 +363,7 @@ async function load_gamefile() {
 		convolver_node.buffer = convolver_buffer;
 	});
 	
-	document.getElementById("loadmenu").style.display = "none";
+	//document.getElementById("loadmenu").style.display = "none";
 	infile = document.getElementById("fileinput").files[0];
 	let filelistelem = document.getElementById("filelist");
 	
@@ -570,7 +570,7 @@ async function set_sbv2(blob) {
 	dispose_old = ()=>{if(stop_playing) stop_playing();};
 	
 	let num_midis = sbv2.tracks.length;
-	for(let i = (num_midis <= 1 ? 0 : 1); i < num_midis; i++) { // Yes, I'm skipping track zero. Track zero doesn't have anything useful. At least not for this thing.
+	for(let i = 0; i < num_midis; i++) {
 		let track = sbv2.tracks[i];
 		
 		let tempo = track.tempo;
@@ -821,6 +821,12 @@ async function set_sbv2(blob) {
 			saveAs(new Blob([outfile], {type:"audio/midi"}), [...file.slice(44,48)].map((cc)=>{return String.fromCharCode(cc);}).join("") + i + '.mid');
 		});
 		contentelem.appendChild(savemid_button);
+		
+		let insertmid_button = document.createElement("input");
+		insertmid_button.type = "button";
+		insertmid_button.value = "Replace .mid";
+		
+		contentelem.appendChild(insertmid_button);
 		
 		let vis_button = document.createElement("input");
 		vis_button.type = "button";
