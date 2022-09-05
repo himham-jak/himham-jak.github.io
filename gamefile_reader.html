@@ -578,8 +578,8 @@ async function set_sbv2(blob) {
 		let ticks_per_qnote = track.ticks_per_qnote;
 		let data_offset = track.data_offset;
 		
-		let mtext = `Track ${i}\n`;
-		if(i<1 && num_midis>1) {mtext += `(A little fucky)`;}
+		let mtext = `Track ${i}`;
+		if(i<1 && num_midis>1) {mtext += ` (A little fucky)`;}
 		mtext += `\n`;
 		mtext += `  Tempo: ${tempo} BPM\n`;
 		mtext += `  Ticks per quarter note: ${ticks_per_qnote}\n`;
