@@ -364,6 +364,7 @@ async function load_gamefile() {
 	});
 	
 	//document.getElementById("loadmenu").style.display = "none";
+	document.getElementById("savemenu").style.display = "inline";
 	infile = document.getElementById("fileinput").files[0];
 	let filelistelem = document.getElementById("filelist");
 	
@@ -4060,6 +4061,14 @@ const impulse_response_url = "data:audio/ogg;base64,T2dnUwACAAAAAAAAAAB4ZQAAAAAA
 	top:0px;
 	width:100%;
 }
+#savemenu {
+	text-align:center;
+	position:absolute;
+	left:290px;
+	top:100px;
+	width:100%;
+	display:none;
+}
 canvas {
   image-rendering: optimizeSpeed;
   image-rendering: -moz-crisp-edges;
@@ -4115,6 +4124,9 @@ canvas {
 	<div></div>
 	<input type="file" id="fileinput">
 	<input type="button" onclick="load_gamefile()" value="Load">
+</div>
+<div id="savemenu">
+	<input type="button" onclick="" value="Save as .MUS">
 </div>
 <div id="progress-list">
 </div>
