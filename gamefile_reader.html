@@ -1,8 +1,8 @@
-<!-- Ctrl+F "TODO" to see my many failures -->
+<!-- Ctrl+F "TODO" or "*" to see my many failures -->
 
 <html>
 <head>
-<title>MUS Editor.</title>
+<title>MUS Editor</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -1086,7 +1086,7 @@ Sound length: ${sound_length}
 		let region_offset = dv.getUint32(instruments_start + (i*0x8) + 0x4, true) + sbv2_start;
 		
 		let instrument_elem = document.createElement("pre");
-		instrument_elem.textContent = `=== Program 0x${i.toString(16)} ===\nVolume: ${instrument_volume}\nPan: ${instrument_pan}`;
+		instrument_elem.textContent = `=== Instrument ${i.toString(16)} ===\nVolume: ${instrument_volume}\nPan: ${instrument_pan}`;
 		contentelem.appendChild(instrument_elem);
 		
 		let instrument_obj = {
@@ -1156,7 +1156,7 @@ Sound length: ${sound_length}
 			
 			let button2 = document.createElement("input");
 			button2.type = "button";
-			button2.value = "Change*";
+			button2.value = "Replace*";
 			contentelem.appendChild(button2);
 		}
 	}
