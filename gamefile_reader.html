@@ -2,7 +2,7 @@
 
 <html>
 <head>
-<title>MUS Editor</title>
+<title>MUS Editor.</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -400,7 +400,7 @@ async function load_gamefile(num) {
 				let part_header_blob = infile.slice(this_sectors[i]*2048, this_sectors[i]*2048+48);
 				let part_header = new Uint8Array(await new Response(part_header_blob).arrayBuffer());
 				if(part_header[0] == 0x49 && part_header[1] == 0x44 && part_header[2] == 0x4D) {
-					fileelem.textContent = index_string+": IDM";
+					fileelem.textContent = index_string+"IDM";
 					let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
 					let part = new Uint8Array(await new Response(part_blob).arrayBuffer());
 					let part_dv = new DataView(part.buffer);
@@ -491,7 +491,7 @@ async function load_gamefile(num) {
 					}
 				} else {
 					if(part_header[24] == 0x53 && part_header[25] == 0x42 && part_header[26] == 0x6C && part_header[27] == 0x6B) {
-						fileelem.textContent = index_string+": Sound bank (" + (part_header[0x2e] + (part_header[0x2f] * 256)) + " sounds)";
+						fileelem.textContent = index_string+"Sound Bank (" + (part_header[0x2e] + (part_header[0x2f] * 256)) + " sounds)";
 						let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
 						fileelem.addEventListener("click", (e) => {
 							for(let othersel of document.querySelectorAll(".file-item-selected")) {
@@ -516,7 +516,7 @@ async function load_gamefile(num) {
 							if(part_header[i] == 0) break;
 							title += String.fromCharCode(part_header[i]);
 						}
-						fileelem.textContent = index_string+": VAGp sound \"" + title + "\"";
+						fileelem.textContent = index_string+"VAGp Sound \"" + title + "\"";
 						let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
 						fileelem.addEventListener("click", (e) => {
 							for(let othersel of document.querySelectorAll(".file-item-selected")) {
@@ -526,7 +526,7 @@ async function load_gamefile(num) {
 							set_vagp(part_blob);
 						});
 					} else if(part_header[0] == 0x20 && part_header[1] == 0x4B && part_header[2] == 0x50 && part_header[3] == 0x56) {
-						fileelem.textContent = index_string+": KPV audio";
+						fileelem.textContent = index_string+"KPV audio";
 						let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
 						fileelem.addEventListener("click", (e) => {
 							for(let othersel of document.querySelectorAll(".file-item-selected")) {
@@ -536,7 +536,7 @@ async function load_gamefile(num) {
 							set_kpv(part_blob);
 						});
 					} else {
-						fileelem.textContent = index_string+": Unknown File";
+						fileelem.textContent = index_string+"Unknown File: " + infile.name;
 					}
 					file_list.push(null);
 				}
