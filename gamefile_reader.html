@@ -5,7 +5,7 @@ Version 2 -->
 
 <html>
 <head>
-<title>MUS/VAGWAD Editor</title>
+<title>.MUS/VAGWAD Editor</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -1720,7 +1720,7 @@ async function set_vagp(blob) {
 	let contentelem = document.getElementById("content");
 	contentelem.innerHTML = "";
 	
-	function findVAGp(element, index, array) {
+	function findVAGp(array, index) {
 	  return (
 	    array[index] == 0x56 &&
 	    array[index+1] == 0x41 &&
