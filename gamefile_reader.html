@@ -501,7 +501,7 @@ async function load_gamefile() {
 						set_sblk(part_blob);
 					});
 				} else if(part_header[32] == 0x53 && part_header[33] == 0x42 && part_header[34] == 0x76 && part_header[35] == 0x32) {
-					fileelem.textContent = index_string+"Music File: \"" + [...part_header.slice(44,48)].map((cc)=>{return String.fromCharCode(cc);}).join("") + "\" from xxx.MUS";
+					fileelem.textContent = index_string+"Music File: \"" + [...part_header.slice(44,48)].map((cc)=>{return String.fromCharCode(cc);}).join("") + "\" from xxx.MUS" + infile.name;
 					let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
 					fileelem.addEventListener("click", (e) => {
 						for(let othersel of document.querySelectorAll(".file-item-selected")) {
@@ -4119,7 +4119,7 @@ canvas {
 <div id="loadmenu">
 	<div>Please select the .MUS file off the game disk.</div>
 	<input type="file" id="fileinput">
-	<input type="button" onclick="load_gamefile()" value="Load">
+	<input type="button" onclick="load_gamefile()" value="Load"><br>
 	<div id="savemenu"><input type="button" onclick="" value="Save as .MUS"></div>
 </div>
 <div id="progress-list">
