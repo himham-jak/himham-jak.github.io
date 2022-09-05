@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>MUS Editor</title>
+<title>MUS Editor.</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -694,7 +694,7 @@ async function set_sbv2(blob) {
 		
 		let savewav_button = document.createElement("input");
 		savewav_button.type = "button";
-		savewav_button.value = "Save .wav (may take a while)";
+		savewav_button.value = "Save as .wav";
 		savewav_button.addEventListener("click", async () => {
 			/*for(let chan = 0; chan < 16; chan++) {
 				let ctx = new OfflineAudioContext(2, (track.seconds + 5)*48000, 48000);
@@ -830,7 +830,7 @@ async function set_sbv2(blob) {
 		
 		let insertmid_button = document.createElement("input");
 		insertmid_button.type = "button";
-		insertmid_button.value = "Replace with .mid";
+		insertmid_button.value = "Replace with .mid*";
 		
 		contentelem.appendChild(insertmid_button);
 		
@@ -1152,6 +1152,11 @@ Sound length: ${sound_length}
 			});
 			button.style.marginLeft = "40px";
 			contentelem.appendChild(button);
+			
+			let button2 = document.createElement("input");
+			button2.type = "button";
+			button2.value = "Change";
+			contentelem.appendChild(button2);
 		}
 	}
 }
@@ -4122,7 +4127,7 @@ canvas {
 	<div>Please select the .MUS file off the game disk.</div>
 	<input type="file" id="fileinput">
 	<input type="button" onclick="load_gamefile()" value="Load"><br>
-	<div id="savemenu"><input type="button" onclick="" value="Save as .MUS"></div>
+	<div id="savemenu"><input type="button" onclick="" value="Save as .MUS*"></div>
 </div>
 <div id="progress-list">
 </div>
