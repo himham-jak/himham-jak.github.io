@@ -1,6 +1,8 @@
+<!-- Ctrl+F "TODO" to see my many failures -->
+
 <html>
 <head>
-<title>MUS Editor</title>
+<title>MUS Editor.</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -475,7 +477,7 @@ async function load_gamefile() {
 								}
 								indent -= 2;
 							}
-							open_tab(sub_blob, file_entry, false);
+							open_tab(sub_blob, file_entry, false); // TODO my hope was that putting this here would run it automatically but apparently not :(
 							return true;
 						})(curr_addr)) break;
 					} else {
@@ -539,7 +541,6 @@ async function load_gamefile() {
 			}
 		}
 	}
-	//open_tab(sub_blob, file_entry, false); // my hope was that putting this here would run it automatically but apparently not :(
 }
 
 async function set_sbv2(blob) {
@@ -4047,7 +4048,7 @@ const impulse_response_url = "data:audio/ogg;base64,T2dnUwACAAAAAAAAAAB4ZQAAAAAA
 	left:0px;
 	top:0px;
 	bottom:0px;
-	width:290px;
+	width:320px;
 	overflow:auto;
 }
 .file-item-selected {
