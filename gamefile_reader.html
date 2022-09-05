@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>MUS Editor</title>
+<title>MUS Editor.</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -386,7 +386,7 @@ async function load_gamefile() {
 	}
 	
 	for(let i = 0; i < this_sectors.length; i++) {
-		let index_string = "0x"+i.toString(16).padStart(4,0);
+		let index_string = ""; //"0x"+i.toString(16).padStart(4,0);
 		let fileelem = document.createElement("div");
 		filelistelem.appendChild(fileelem);
 		if(this_sizes[i] == 0) {
@@ -500,7 +500,7 @@ async function load_gamefile() {
 						set_sblk(part_blob);
 					});
 				} else if(part_header[32] == 0x53 && part_header[33] == 0x42 && part_header[34] == 0x76 && part_header[35] == 0x32) {
-					fileelem.textContent = index_string+": Music file \"" + [...part_header.slice(44,48)].map((cc)=>{return String.fromCharCode(cc);}).join("") + "\"";
+					fileelem.textContent = index_string+"Music File: \"" + [...part_header.slice(44,48)].map((cc)=>{return String.fromCharCode(cc);}).join("") + "\" from xxx.MUS";
 					let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
 					fileelem.addEventListener("click", (e) => {
 						for(let othersel of document.querySelectorAll(".file-item-selected")) {
