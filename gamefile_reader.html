@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>MUS Editor.</title>
+<title>MUS Editor</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -501,7 +501,7 @@ async function load_gamefile() {
 						set_sblk(part_blob);
 					});
 				} else if(part_header[32] == 0x53 && part_header[33] == 0x42 && part_header[34] == 0x76 && part_header[35] == 0x32) {
-					fileelem.textContent = index_string+"Music File: \"" + [...part_header.slice(44,48)].map((cc)=>{return String.fromCharCode(cc);}).join("") + "\" from xxx.MUS" + infile.name;
+					fileelem.textContent = index_string+"Music File: \"" + [...part_header.slice(44,48)].map((cc)=>{return String.fromCharCode(cc);}).join("") + "\" from " + infile.name;
 					let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
 					fileelem.addEventListener("click", (e) => {
 						for(let othersel of document.querySelectorAll(".file-item-selected")) {
@@ -582,7 +582,9 @@ async function set_sbv2(blob) {
 		let mtext = `Track ${i}`;
 		if(i<1 && num_midis>1) {mtext += ` (A little fucky)`;}
 		mtext += `\n`;
-		mtext += `  Tempo: ${tempo} BPM\n`;
+		mtext += `  Tempo: ${tempo} BPM`;
+		if(i<1 && num_midis>1) {mtext += ` (probably wrong)`;}
+		mtext += `\n`;
 		mtext += `  Ticks per quarter note: ${ticks_per_qnote}\n`;
 		let midi_elem = document.createElement("pre");
 		midi_elem.textContent = mtext;
