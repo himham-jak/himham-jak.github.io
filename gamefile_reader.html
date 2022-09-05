@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>MUS Editor.</title>
+<title>MUS Editor</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -456,7 +456,7 @@ async function load_gamefile() {
 									othersel.classList.remove("file-item-selected");
 								}
 								partelem.classList.add("file-item-selected");
-								set_file(sub_blob, file_entry, e.ctrlKey);
+								set_file(sub_blob, file_entry, false);
 							partelem.addEventListener("click", (e) => {
 								for(let othersel of document.querySelectorAll(".file-item-selected")) {
 									othersel.classList.remove("file-item-selected");
