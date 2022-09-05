@@ -5,7 +5,7 @@ Version 2 -->
 
 <html>
 <head>
-<title>MUS/VAGWAD Editor</title>
+<title>.MUS/VAGWAD Editor</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -1752,12 +1752,18 @@ async function set_vagp(blob) {
 		let pre = document.createElement("pre");
 		pre.textContent = `Start: ${start_point}, Sound length: ${sound_length} bytes, ${(sound_length * 24 / 16 / sample_rate).toFixed(3)} seconds, Sample rate: ${sample_rate} Hz\n`;
 		contentelem.appendChild(pre);
-
-		let sound = decode_adpcm(file, sound_start, sound_end, sample_rate);
-		let source = audio_context.createBufferSource();
-		source.buffer = sound.buffer;
-		source.connect(audio_context.destination);
-		source.start();
+		
+		let play_button = document.createElement("input");
+		play_button.type = "button";
+		play_button.value = "Play";
+		play_button.addEventListener("click", () => {
+			let sound = decode_adpcm(file, sound_start, sound_end, sample_rate);
+			let source = audio_context.createBufferSource();
+			source.buffer = sound.buffer;
+			source.connect(audio_context.destination);
+			source.start();
+		});
+		contentelem.appendChild(play_button);
 	}
 }
 
