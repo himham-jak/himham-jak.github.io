@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>MUS Editor.</title>
+<title>MUS Editor</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -452,6 +452,7 @@ async function load_gamefile() {
 							}
 							if(do_adjust)
 								curr_addr += size;
+							open_tab(sub_blob, file_entry, false);
 							partelem.addEventListener("click", (e) => {
 								open_tab(sub_blob, file_entry, e.ctrlKey);
 							});
