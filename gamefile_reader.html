@@ -6,7 +6,7 @@ Version 2 -->
 <html>
 <head>
 <title>
-	MUS/VAGWAD Editor
+	.MUS/VAGWAD Editor
 </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
@@ -1780,15 +1780,7 @@ async function set_vagp(blob) {
 		let save_button = document.createElement("input");
 		save_button.type = "button";
 		save_button.value = "Save as .wav*";
-		save_button.addEventListener("click", () => {
-			/*var fileContent = "My epic novel that I don't want to lose.";
-			var bb = new Blob([fileContent ], { type: 'text/plain' });
-			var a = document.createElement('a');
-			a.download = 'download.txt';
-			a.href = window.URL.createObjectURL(bb);
-			a.click();
-			a.remove();*/
-		}
+		
 		contentelem.appendChild(save_button);
 		
 		let replace_button = document.createElement("input");
@@ -4145,7 +4137,7 @@ const impulse_response_url = "data:audio/ogg;base64,T2dnUwACAAAAAAAAAAB4ZQAAAAAA
 	position:absolute;
 	right:50px;
 	top:0px;
-	background-color: rgba(0, 0, 0, 0.5);
+	background-color: #ccc;
 	padding: 10px;
 }
 #savemenu {
