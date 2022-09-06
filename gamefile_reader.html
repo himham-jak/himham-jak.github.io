@@ -6,7 +6,7 @@ Version 2 -->
 <html>
 <head>
 <title>
-	MUS/VAGWAD Editor
+	.MUS/VAGWAD Editor
 </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
@@ -1792,9 +1792,23 @@ async function set_vagp(blob) {
 		let replace2_button = document.createElement("input");
 		replace2_button.type = "file";
 		replace2_button.value = "Replace with .adpcm**";
-		replace2_button.addEventListener("change", (e) => {
-			var file = e.target.files[0]; 
-		});
+		replace2_button.onchange = e => { 
+
+		   // getting a hold of the file reference
+		   var file = e.target.files[0]; 
+
+		   // setting up the reader
+		   var reader = new FileReader();
+		   reader.readAsText(file,'UTF-8');
+
+		   // here we tell the reader what to do when it's done reading...
+		   reader.onload = readerEvent => {
+		      var content = readerEvent.target.result; // this is the content!
+		      console.log( content );
+		   }
+		}
+
+		replace2_button.click();
 		contentelem.appendChild(replace2_button);
 	}
 }
