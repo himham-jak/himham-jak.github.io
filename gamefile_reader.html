@@ -6,7 +6,7 @@ Version 2 -->
 <html>
 <head>
 <title>
-	.MUS/VAGWAD Editor
+	MUS/VAGWAD Editor
 </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
@@ -1786,7 +1786,9 @@ async function set_vagp(blob) {
 		let replace_button = document.createElement("input");
 		replace_button.type = "button";
 		replace_button.value = "Replace with .wav*";
-		
+		replace2_button.addEventListener("click", () => {
+			document.getElementById('my_file').click();
+		});
 		contentelem.appendChild(replace_button);
 		
 		let replace2_button = document.createElement("input");
@@ -4207,7 +4209,7 @@ canvas {
 	<input type="file" id="fileinput" name="file" onChange="load_gamefile()" multiple="multiple">
 	<!-- <input type="button" onclick="load_gamefile()" value="Load"> --> <br>
 	<div id="savemenu"><input type="button" onclick="save_gamefile()" value="Save As*"></div>
-	<input type="file" id="my_file">
+	<input type="file" id="my_file" accept=".xls,.xlsx">
 </div>
 <div id="progress-list">
 </div>
