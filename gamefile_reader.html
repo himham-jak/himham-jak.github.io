@@ -6,7 +6,7 @@ Version 2 -->
 <html>
 <head>
 <title>
-	.MUS/VAGWAD Editor
+	MUS/VAGWAD Editor
 </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
@@ -1790,7 +1790,7 @@ async function set_vagp(blob) {
 		contentelem.appendChild(replace_button);
 		
 		let replace2_button = document.createElement("input");
-		replace2_button.type = "button";
+		replace2_button.type = "file";
 		replace2_button.value = "Replace with .adpcm**";
 		replace2_button.addEventListener("click", () => {
 			replace2_button.value = "Replace with .adpcm******";
