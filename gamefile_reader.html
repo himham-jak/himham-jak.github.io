@@ -5,7 +5,7 @@ Version 2 -->
 
 <html>
 <head>
-<title>MUS/VAGWAD Editor</title>
+<title>.MUS/VAGWAD Editor</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -1782,6 +1782,12 @@ async function set_vagp(blob) {
 		replace_button.value = "Replace with .wav*";
 		
 		contentelem.appendChild(replace_button);
+		
+		let replace2_button = document.createElement("input");
+		replace2_button.type = "button";
+		replace2_button.value = "Replace with .adpcm*";
+		
+		contentelem.appendChild(replace2_button);
 	}
 }
 
