@@ -5,7 +5,9 @@ Version 2 -->
 
 <html>
 <head>
-<title>.MUS/VAGWAD Editor</title>
+<title>
+	MUS/VAGWAD Editor
+</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
@@ -357,8 +359,12 @@ for(let i = 0; i < 160; i++) {
 	rate = Math.floor(rate * (2 ** shift));
 	adsr_rates[i] = Math.min(rate, 0x3FFFFFFF);
 }
+	
+async function save_gamefile() {
+	// TODO
+}
 
-async function load_gamefile(num) {
+async function load_gamefile() {
 	audio_context = new AudioContext({sampleRate: 48000}); // the PS2 SPU runs at 48 kHz
 	
 	convolver_node = audio_context.createConvolver();
@@ -1784,9 +1790,11 @@ async function set_vagp(blob) {
 		contentelem.appendChild(replace_button);
 		
 		let replace2_button = document.createElement("input");
-		replace2_button.type = "button";
-		replace2_button.value = "Replace with .adpcm*";
-		
+		replace2_button.type = "file";
+		replace2_button.value = "Replace with .adpcm**";
+		replace2_button.addEventListener("change", (e) => {
+			var file = e.target.files[0]; 
+		});
 		contentelem.appendChild(replace2_button);
 	}
 }
@@ -4194,7 +4202,7 @@ canvas {
 	<div>Please select the MUS file(s) off your game disk.</div>
 	<input type="file" id="fileinput" name="file" onChange="load_gamefile()" multiple="multiple">
 	<!-- <input type="button" onclick="load_gamefile()" value="Load"> --> <br>
-	<div id="savemenu"><input type="button" onclick="" value="Save as .MUS*"></div>
+	<div id="savemenu"><input type="button" onclick="save_gamefile()" value="Save As*"></div>
 </div>
 <div id="progress-list">
 </div>
