@@ -13,7 +13,7 @@ Replicate set_sblk(blob)'s wav system for vagp
 <html>
 <head>
 <title>
-	MUS/VAGWAD Editor
+	MUS/SBK/VAGWAD Editor
 </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
@@ -1895,7 +1895,7 @@ async function set_sblk(blob) {
 					let entry2 = sound_2_ptr + j*8;
 					let e2_type = dv.getUint8(entry2 + 3); // Index into function table at 0x21188
 					elem.textContent += "    Type: " + e2_type + "\n";
-					if(e2_type == 1) {
+					//if(e2_type == 1) {
 						let offset = dv.getUint32(entry2, true) & 0xFFFFFF;
 						elem.textContent += "      Offset: " + offset + "\n";
 						elem.textContent += "      Other: " + dv.getUint32(entry2 + 4, true) + "\n";
@@ -1913,9 +1913,9 @@ async function set_sblk(blob) {
 						elem = document.createElement("pre");
 						contentelem.appendChild(sound_elem);
 						
-					} else {
-						elem.textContent += "      " + dv.getUint32(entry2, true).toString(16).padStart(8, 0) + " " + dv.getUint32(entry2+4, true).toString(16).padStart(8, 0)+"\n";
-					}
+					//} else {
+						//elem.textContent += "      " + dv.getUint32(entry2, true).toString(16).padStart(8, 0) + " " + dv.getUint32(entry2+4, true).toString(16).padStart(8, 0)+"\n";
+					//}
 				}
 			}
 		} catch(e) {
