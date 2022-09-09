@@ -13,7 +13,7 @@ Replicate set_sblk(blob)'s wav system for vagp
 <html>
 <head>
 <title>
-	MUS/SBK/VAGWAD Editor
+	.MUS/SBK/VAGWAD Editor
 </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
@@ -507,7 +507,7 @@ async function load_gamefile() {
 					}
 				} else {
 					if(part_header[24] == 0x53 && part_header[25] == 0x42 && part_header[26] == 0x6C && part_header[27] == 0x6B) {
-						fileelem.textContent = index_string+"Sound Bank (" + (part_header[0x2e] + (part_header[0x2f] * 256)) + " sounds)";
+						fileelem.textContent = index_string+"Sound Bank:" + infile.name + " (" + (part_header[0x2e] + (part_header[0x2f] * 256)) + " sounds)";
 						let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
 						fileelem.addEventListener("click", (e) => {
 							for(let othersel of document.querySelectorAll(".file-item-selected")) {
