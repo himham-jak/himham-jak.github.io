@@ -4207,6 +4207,11 @@ canvas {
     display: none;
 }
 
+#fileoptions {
+	transform: rotateY(180deg);
+	overflow: auto;
+}
+
 </style>
 </head>
 <body>
@@ -4215,7 +4220,7 @@ canvas {
 <div id="content">
 </div>
 <div id="loadmenu">
-	<div>Select MUS/SBK*/VAGWAD file(s) from your ISO.</div>
+	<div id="fileoptions">Select MUS/SBK*/VAGWAD file(s) from your ISO.</div>
 	<input type="file" id="fileinput" name="file" onChange="load_gamefile()" multiple="multiple">
 	<!-- <input type="button" onclick="load_gamefile()" value="Load"> --> <br>
 	<div id="savemenu"><input type="button" onclick="save_gamefile()" value="Save As*"></div>
