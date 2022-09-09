@@ -507,7 +507,7 @@ async function load_gamefile() {
 					}
 				} else {
 					if(part_header[24] == 0x53 && part_header[25] == 0x42 && part_header[26] == 0x6C && part_header[27] == 0x6B) {
-						fileelem.textContent = index_string+"Sound Bank:" + infile.name + " (" + (part_header[0x2e] + (part_header[0x2f] * 256)) + " sounds)";
+						fileelem.textContent = index_string+"Sound Bank: " + infile.name + " (" + (part_header[0x2e] + (part_header[0x2f] * 256)) + " sounds)";
 						let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
 						fileelem.addEventListener("click", (e) => {
 							for(let othersel of document.querySelectorAll(".file-item-selected")) {
@@ -4215,18 +4215,17 @@ canvas {
 </style>
 </head>
 <body>
-<div id="filelist">
-</div>
-<div id="content">
-</div>
+<div id="filelist"></div>
+<div id="content"></div>
 <div id="loadmenu">
-	<div id="fileoptions">Select MUS/SBK*/VAGWAD file(s) from your ISO.</div>
-	<input type="file" id="fileinput" name="file" onChange="load_gamefile()" multiple="multiple">
-	<!-- <input type="button" onclick="load_gamefile()" value="Load"> --> <br>
-	<div id="savemenu"><input type="button" onclick="save_gamefile()" value="Save As*"></div>
-	<input type="file" id="my_file" accept=".wav,.adpcm">
+	<div id="fileoptions">
+		Select MUS/SBK*/VAGWAD file(s) from your ISO.
+		<input type="file" id="fileinput" name="file" onChange="load_gamefile()" multiple="multiple">
+		<!-- <input type="button" onclick="load_gamefile()" value="Load"> --> <br>
+		<div id="savemenu"><input type="button" onclick="save_gamefile()" value="Save As*"></div>
+		<input type="file" id="my_file" accept=".wav,.adpcm">
+	</div>
 </div>
-<div id="progress-list">
-</div>
+<div id="progress-list"></div>
 </body>
 </html>
