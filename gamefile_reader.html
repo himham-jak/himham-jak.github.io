@@ -553,6 +553,7 @@ async function load_gamefile() {
 						});
 					} else {
 						fileelem.textContent = index_string+"Unknown File: " + infile.name;
+						fileelem.classList.add("gray");
 					}
 					file_list.push(null);
 				}
@@ -4126,6 +4127,16 @@ const impulse_response_url = "data:audio/ogg;base64,T2dnUwACAAAAAAAAAAB4ZQAAAAAA
 .file-item-selected {
 	background-color: #aaa;
 }
+	
+.file-item {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+	
+.gray {
+	opacity: 0.6;
+}
+	
 .info-overlay {
 	position: absolute;
 	pointer-events: none;
