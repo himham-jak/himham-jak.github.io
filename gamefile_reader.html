@@ -13,7 +13,7 @@ Replicate set_sblk(blob)'s wav system for vagp
 <html>
 <head>
 <title>
-	.MUS/SBK/VAGWAD Editor
+	MUS/SBK/VAGWAD Editor
 </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
@@ -574,7 +574,7 @@ async function load_gamefile() {
 	}
 }
 
-async function set_sbv2(blob) { // MUS files
+async function set_sbv2(blob) {
 	if(dispose_old) {
 		dispose_old();
 		dispose_old = null;
@@ -582,10 +582,7 @@ async function set_sbv2(blob) { // MUS files
 	let file = new Uint8Array(await new Response(blob).arrayBuffer());
 	do_log(file.length);
 	let dv = new DataView(file.buffer);
-	let contentelem = document.getElementById("content");
-	newcontent = document.createElement("div");
-	//content.classList.add("newcontent");
-	contentelem.appendChild(content);
+	let contentelem = document.createElement("div");
 	
 	let sbv2 = new SBv2Decoder(file);
 	do_log(sbv2);
@@ -4165,7 +4162,7 @@ const impulse_response_url = "data:audio/ogg;base64,T2dnUwACAAAAAAAAAAB4ZQAAAAAA
 	left: 0px;
 }
 
-.content {
+#content {
 	position: absolute;
 	left: 340px;
 	top: 0px;
