@@ -13,7 +13,7 @@ Replicate set_sblk(blob)'s wav system for vagp
 <html>
 <head>
 <title>
-	MUS/SBK/VAGWAD Editor
+	.MUS/SBK/VAGWAD Editor
 </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
@@ -582,9 +582,10 @@ async function set_sbv2(blob) { // MUS files
 	let file = new Uint8Array(await new Response(blob).arrayBuffer());
 	do_log(file.length);
 	let dv = new DataView(file.buffer);
-	let contentelem = document.createElement("div");
-	contentelem.classList.add("content");
-	document.body.appendChild(contentelem);
+	let contentelem = document.getElementById("content");
+	newcontent = document.createElement("div");
+	//content.classList.add("newcontent");
+	contentelem.appendChild(content);
 	
 	let sbv2 = new SBv2Decoder(file);
 	do_log(sbv2);
