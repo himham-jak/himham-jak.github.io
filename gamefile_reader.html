@@ -13,7 +13,7 @@ Replicate set_sblk(blob)'s wav system for vagp
 <html>
 <head>
 <title>
-	.MUS/SBK/VAGWAD Editor
+	MUS/SBK/VAGWAD Editor
 </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
@@ -561,7 +561,7 @@ async function load_gamefile() {
 						let close = document.createElement("span");
 						fileelem.appendChild(close);
 						close.textContent = "x";
-						fileelem.addEventListener("click", (e) => {
+						close.addEventListener("click", (e) => {
 							fileelem.remove();
 						});
 						
@@ -582,8 +582,7 @@ async function set_sbv2(blob) {
 	let file = new Uint8Array(await new Response(blob).arrayBuffer());
 	do_log(file.length);
 	let dv = new DataView(file.buffer);
-	let contentelem = document.getElementById("content");
-	contentelem.innerHTML = "";
+	let contentelem = document.createElement("div");
 	
 	let sbv2 = new SBv2Decoder(file);
 	do_log(sbv2);
@@ -1743,8 +1742,7 @@ async function set_vagp(blob) {
 	}
 	let file = new Uint8Array(await new Response(blob).arrayBuffer());
 	let dv = new DataView(file.buffer);
-	let contentelem = document.getElementById("content");
-	contentelem.innerHTML = "";
+	let contentelem = document.createElement("div");
 	
 	function findVAGp(array, index) {
 	  return (
@@ -1820,8 +1818,7 @@ async function set_kpv(blob) {
 	}
 	let file = new Uint8Array(await new Response(blob).arrayBuffer());
 	let dv = new DataView(file.buffer);
-	let contentelem = document.getElementById("content");
-	contentelem.innerHTML = "";
+	let contentelem = document.createElement("div");
 	
 	let sound_start = dv.getUint32(0x08, true);
 	let sound_length = dv.getUint32(0x0C, true);
@@ -1879,8 +1876,7 @@ async function set_sblk(blob) {
 
 	let file = new Uint8Array(await new Response(blob).arrayBuffer());
 	let dv = new DataView(file.buffer);
-	let contentelem = document.getElementById("content");
-	contentelem.innerHTML = "";
+	let contentelem = document.createElement("div");
 
 	let header_size = dv.getUint32(0x08, true);
 	let num_sounds = dv.getUint16(0x16 + header_size, true);
@@ -4255,9 +4251,9 @@ canvas {
 <div id="content"></div>
 <div id="loadmenu">
 	<div id="fileoptions">
-		Select MUS/SBK*/VAGWAD file(s) from your ISO.<br>
+		Select MUS/SBK*/VAGWAD file(s) from your ISO.<br><br>
 		<input type="file" id="fileinput" name="file" onChange="load_gamefile()" multiple="multiple" value="Open">
-		<!-- <input type="button" onclick="load_gamefile()" value="Load"> --> <br>
+		<!-- <input type="button" onclick="load_gamefile()" value="Load"> --> <br><br>
 		<div id="savemenu"><input type="button" onclick="save_gamefile()" value="Save As*"></div>
 		<input type="file" id="my_file" accept=".wav,.adpcm">
 	</div>
