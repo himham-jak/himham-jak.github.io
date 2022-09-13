@@ -13,7 +13,7 @@ Replicate set_sblk(blob)'s wav system for vagp
 <html>
 <head>
 <title>
-	MUS/SBK/VAGWAD Editor
+	.MUS/SBK/VAGWAD Editor
 </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
@@ -1738,7 +1738,7 @@ async function set_vagp(blob) {
 	
 	function findVAGp(array, index) {
 	  return (
-	    array[index] == 0x56 &&
+	    array[index]   == 0x56 &&
 	    array[index+1] == 0x41 &&
 	    array[index+2] == 0x47 &&
 	    array[index+3] == 0x70
@@ -1786,7 +1786,7 @@ async function set_vagp(blob) {
 		savewav_button.type = "button";
 		savewav_button.value = "Save as .wav*";
 		savewav_button.addEventListener("click", async () => {
-			let ctx = new OfflineAudioContext(2, (0 + 5)*48000, 48000);
+			let ctx = new OfflineAudioContext(2, ((sound_length * 24 / 16 / sample_rate).toFixed(3) + 5)*48000, 48000);
 				
 			/*let player = new MidiPlayer(sbv2, track, ctx);
 			player.channel_mask = calc_channel_mask();
