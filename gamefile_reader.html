@@ -13,7 +13,7 @@ Replicate set_sblk(blob)'s wav system for vagp
 <html>
 <head>
 <title>
-	.MUS/SBK/VAGWAD Editor
+	MUS/SBK/VAGWAD Editor
 </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
@@ -4206,12 +4206,14 @@ canvas {
 
 #progress-list {
 	position: fixed;
+	left: 0px;
 	right: 0px;
-	top: 0px;
+	bottom: 0px;
 	display: inline-block;
 	margin: 0px;
 	padding: 0px;
 	z-index: 999;
+	transform: rotateY(180deg);
 }
 	
 #progress-list > div {
