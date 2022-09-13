@@ -13,7 +13,7 @@ Replicate set_sblk(blob)'s wav system for vagp
 <html>
 <head>
 <title>
-	.MUS/SBK/VAGWAD Editor
+	MUS/SBK/VAGWAD Editor
 </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
@@ -726,16 +726,6 @@ async function set_sbv2(blob) {
 		savewav_button.type = "button";
 		savewav_button.value = "Save as .wav";
 		savewav_button.addEventListener("click", async () => {
-			/*for(let chan = 0; chan < 16; chan++) {
-				let ctx = new OfflineAudioContext(2, (track.seconds + 5)*48000, 48000);
-				
-				let player = new MidiPlayer(sbv2, track, ctx);
-				player.channel_mask = 1 << chan;
-				player.play();
-				
-				let buf = await ctx.startRendering();
-				saveAs(new Blob([to_wav(buf)], {type:'audio/wav'}), sbv2.tag + i + "_" + chan + ".wav");
-			}*/
 			let ctx = new OfflineAudioContext(2, (track.seconds + 5)*48000, 48000);
 				
 			let player = new MidiPlayer(sbv2, track, ctx);
@@ -1765,18 +1755,14 @@ async function set_vagp(blob) {
 		let version		= dv.getUint32(start_point + 4, false);		// version (should be 2)
 		let sound_offset	= dv.getUint32(start_point + 8, false);		// additional offset for sound_start? (should be 0)
 		let sound_length	= dv.getUint32(start_point + 12, false);	// length in bytes
+		let sound_seconds	= (sound_length * 24 / 16 / sample_rate).toFixed(3);	// length in seconds
 		let sample_rate		= dv.getUint32(start_point + 16, false);	// sample rate in hz
 		let track_name		= String.fromCharCode(dv.getUint16(start_point + 32));	// track name TODO: Make work
 		let sound_start		= start_point + 48;				// sound data start
 		let sound_end		= sound_start + sound_length;			// sound data end
 
-		// unlike literally everything else this format uses big endian instead of little endian.
-		//let sound_start = 0x30;
-		//let sound_length = dv.getUint32(0x0C, false);
-		//let sample_rate = dv.getUint32(0x10, false);
-
 		let pre = document.createElement("pre");
-		pre.textContent = `Track: ${track_name}, Offset: ${start_point}, Length: ${sound_length} bytes, ${(sound_length * 24 / 16 / sample_rate).toFixed(3)} seconds, Sample Rate: ${sample_rate} Hz\n`;
+		pre.textContent = `Track: ${track_name}, Offset: ${start_point}, Length: ${sound_length} bytes, ${sound_seconds} seconds, Sample Rate: ${sample_rate} Hz\n`;
 		contentelem.appendChild(pre);
 		
 		let play_button = document.createElement("input");
@@ -1799,7 +1785,7 @@ async function set_vagp(blob) {
 		
 		let savewav_button = document.createElement("input");
 		savewav_button.type = "button";
-		savewav_button.value = "Save as .wav";
+		savewav_button.value = "Save as .wav*";
 		savewav_button.addEventListener("click", async () => {
 			let ctx = new OfflineAudioContext(2, (5 + 5)*48000, 48000);
 				
@@ -3852,7 +3838,7 @@ function decode_adpcm(data, start_offset, end_offset, sample_rate = 22050) {
 	];
 	let loop_start = 0;
 	let loop = false;
-	// first lets figure out where the end point is.
+	// first let's figure out where the end point is.
 	for(let i = start_offset; i < end_offset; i += 16) {
 		if((data[i+1]) & 2) {
 			loop = true;
