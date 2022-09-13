@@ -13,7 +13,7 @@ Replicate set_sblk(blob)'s wav system for vagp
 <html>
 <head>
 <title>
-	.MUS/SBK/VAGWAD Editor
+	MUS/SBK/VAGWAD Editor
 </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
@@ -1808,10 +1808,10 @@ async function set_vagp(blob) {
 			player.reverb_enabled = reverb_toggle.checked;
 			player.play();*/
 
-			add_rendering_context(ctx, "Saving:");
+			add_rendering_context(ctx, "Saving: " + track_name);
 			
-			/*let buf = await ctx.startRendering();
-			saveAs(new Blob([to_wav(buf)], {type:'audio/wav'}), sbv2.tag + i + ".wav");*/
+			let buf = await ctx.startRendering();
+			saveAs(new Blob([to_wav(buf)], {type:'audio/wav'}), sbv2.tag + i + ".wav");
 		});
 		contentelem.appendChild(savewav_button);
 		
