@@ -13,7 +13,7 @@ Replicate set_sblk(blob)'s wav system for vagp
 <html>
 <head>
 <title>
-	.MUS/SBK/VAGWAD Editor
+	MUS/SBK/VAGWAD Editor
 </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
@@ -1788,7 +1788,7 @@ async function set_vagp(blob) {
 		savewav_button.addEventListener("click", async () => {
 			let ctx = new OfflineAudioContext(2, ((sound_length * 24 / 16 / sample_rate).toFixed(3) + 5)*48000, 48000);
 				
-			/*let player = new MidiPlayer(sbv2, track, ctx);
+			/*let player = new MidiPlayer(source.buffer, track, ctx);
 			player.channel_mask = calc_channel_mask();
 			player.reverb_enabled = reverb_toggle.checked;
 			player.play();*/
@@ -1914,6 +1914,13 @@ async function set_sblk(blob) {
 						elem.textContent += "      Sound start: " + (this_sound_start - sound_start);
 						let sound = decode_adpcm(file, this_sound_start, file.length, 16000);
 						let wav = new Blob([to_wav(sound.buffer)], {type:'audio/wav'});
+						let savewav_button = document.createElement("input");
+						savewav_button.type = "button";
+						savewav_button.value = "Save as .wav*";
+						savewav_button.addEventListener("click", async () => {
+							saveAs(wav, "Sound " + i + ".wav");
+						});
+						contentelem.appendChild(savewav_button);
 						let url = URL.createObjectURL(wav);
 						urls.push(url);
 						let sound_elem = document.createElement("audio");
