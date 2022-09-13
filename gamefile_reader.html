@@ -13,7 +13,7 @@ Replicate set_sblk(blob)'s wav system for vagp
 <html>
 <head>
 <title>
-	.MUS/SBK/VAGWAD Editor
+	MUS/SBK/VAGWAD Editor
 </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
@@ -1797,11 +1797,23 @@ async function set_vagp(blob) {
 		
 		contentelem.appendChild(stop_button);
 		
-		let save_button = document.createElement("input");
-		save_button.type = "button";
-		save_button.value = "Save as .wav*";
-		
-		contentelem.appendChild(save_button);
+		let savewav_button = document.createElement("input");
+		savewav_button.type = "button";
+		savewav_button.value = "Save as .wav";
+		savewav_button.addEventListener("click", async () => {
+			/*let ctx = new OfflineAudioContext(2, (track.seconds + 5)*48000, 48000);
+				
+			let player = new MidiPlayer(sbv2, track, ctx);
+			player.channel_mask = calc_channel_mask();
+			player.reverb_enabled = reverb_toggle.checked;
+			player.play();*/
+
+			add_rendering_context(ctx, "Saving: " + sbv2.tag + i);
+			
+			/*let buf = await ctx.startRendering();
+			saveAs(new Blob([to_wav(buf)], {type:'audio/wav'}), sbv2.tag + i + ".wav");*/
+		});
+		contentelem.appendChild(savewav_button);
 		
 		let replace_button = document.createElement("input");
 		replace_button.type = "button";
