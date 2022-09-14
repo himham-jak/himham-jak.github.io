@@ -1,11 +1,11 @@
-<!-- Ctrl+F "TODO" or "*" to see my many failures -->
+<!-- Ctrl+F "TODO" to see my many failures -->
 <!--
 TODO
 
 Open a tab automatically when it's loaded
 Have tabs stay loaded, just hidden to save load time.
 Remove non-retail sectors
-Replicate set_sblk(blob)'s wav system for vagp
+Save modified files
 
 	MUS
 Inject MID
@@ -16,6 +16,7 @@ Inject Instruments
 Seek past sound name list in Jak1 SBK
 
 	VAG
+Fix track names
 Save as WAV
 Stop Button
 Inject ADPCM
@@ -746,7 +747,7 @@ async function set_sbv2(blob) {
 			player.reverb_enabled = reverb_toggle.checked;
 			player.play();
 
-			add_rendering_context(ctx, "Rendering: " + sbv2.tag + i);
+			add_rendering_context(ctx, "Saving: " + sbv2.tag + i + ".wav");
 			
 			let buf = await ctx.startRendering();
 			saveAs(new Blob([to_wav(buf)], {type:'audio/wav'}), sbv2.tag + i + ".wav");
@@ -863,7 +864,7 @@ async function set_sbv2(blob) {
 		
 		let insertmid_button = document.createElement("input");
 		insertmid_button.type = "button";
-		insertmid_button.value = "Replace with .mid*";
+		insertmid_button.value = "Inject .mid*";
 		
 		contentelem.appendChild(insertmid_button);
 		
@@ -1188,7 +1189,7 @@ Sound length: ${sound_length}
 			
 			let button2 = document.createElement("input");
 			button2.type = "button";
-			button2.value = "Replace*";
+			button2.value = "Inject .mis*";
 			contentelem.appendChild(button2);
 		}
 	}
@@ -1780,9 +1781,9 @@ async function set_vagp(blob) {
 		let play_button = document.createElement("input");
 		play_button.type = "button";
 		play_button.value = "Play";
+		let sound = decode_adpcm(file, sound_start, sound_end, sample_rate);
+		let source = audio_context.createBufferSource();
 		play_button.addEventListener("click", () => {
-			let sound = decode_adpcm(file, sound_start, sound_end, sample_rate);
-			let source = audio_context.createBufferSource();
 			source.buffer = sound.buffer;
 			source.connect(audio_context.destination);
 			source.start();
@@ -1800,22 +1801,27 @@ async function set_vagp(blob) {
 		savewav_button.value = "Save as .wav*";
 		savewav_button.addEventListener("click", async () => {
 			let ctx = new OfflineAudioContext(2, ((sound_length * 24 / 16 / sample_rate).toFixed(3) + 5)*48000, 48000);
-				
-			/*let player = new MidiPlayer(source.buffer, track, ctx);
-			player.channel_mask = calc_channel_mask();
-			player.reverb_enabled = reverb_toggle.checked;
-			player.play();*/
 
-			add_rendering_context(ctx, "Saving: " + track_name);
+			/*let sound = decode_adpcm(file, this_sound_start, file.length, 16000);
+			let wav = new Blob([to_wav(sound.buffer)], {type:'audio/wav'});
+			let savewav_button = document.createElement("input");
+			savewav_button.type = "button";
+			savewav_button.value = "Save as .wav*";
+			savewav_button.addEventListener("click", async () => {
+				saveAs(wav, "Sound " + i + ".wav");
+			});
+			contentelem.appendChild(savewav_button);*/
+
+			add_rendering_context(ctx, "Saving: " + track_name + ".wav");
 			
 			let buf = await ctx.startRendering();
-			saveAs(new Blob([to_wav(buf)], {type:'audio/wav'}), track_name + ".wav");
+			saveAs(new Blob([to_wav(sound.buffer)], {type:'audio/wav'}), track_name + ".wav");
 		});
 		contentelem.appendChild(savewav_button);
 		
 		let replace_button = document.createElement("input");
 		replace_button.type = "button";
-		replace_button.value = "Replace*";
+		replace_button.value = "Inject*";
 		replace_button.addEventListener("click", () => {
 			document.getElementById('my_file').click();
 		});
