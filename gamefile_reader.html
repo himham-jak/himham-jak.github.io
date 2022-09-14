@@ -2,9 +2,7 @@
 <!--
 TODO
 
-Open a tab automatically when it's loaded
 Have tabs stay loaded, just hidden to save load time.
-Remove non-retail sectors
 Save modified files
 
 	MUS
@@ -17,7 +15,6 @@ Seek past sound name list in Jak1 SBK
 
 	VAG
 Fix track names
-Save as WAV
 Stop Button
 Inject ADPCM
 Inject WAV
@@ -341,7 +338,7 @@ function progress_frame() {
 	}
 }
 
-function add_rendering_context(ctx, name) {
+function add_progress_bar(ctx, name) {
 	let container = document.createElement("div");
 	
 	let name_div = document.createElement("div");
@@ -383,6 +380,8 @@ for(let i = 0; i < 160; i++) {
 	
 async function save_gamefile() {
 	// TODO
+	var blob = new Blob(["Hello World"],{type:"text/plain;charset=utf-8"});
+    saveAs(blob,"placeholder.garbage");
 }
 
 async function load_gamefile() {
@@ -400,6 +399,7 @@ async function load_gamefile() {
 	
 	for (let i=0; i < document.getElementById("fileinput").files.length; i++) {
 		infile = document.getElementById("fileinput").files[i];
+		infile_array = new Uint8Array(await new Response(infile).arrayBuffer());
 		let filelistelem = document.getElementById("filelist");
 
 		let this_sectors = file_sectors;
@@ -486,7 +486,11 @@ async function load_gamefile() {
 								if(do_adjust)
 									curr_addr += size;
 								partelem.addEventListener("click", (e) => {
-									open_tab(sub_blob, file_entry, e.ctrlKey);
+									for(let othersel of document.querySelectorAll(".file-item-selected")) {
+										othersel.classList.remove("file-item-selected");
+										}
+									partelem.classList.add("file-item-selected");
+									set_file(blob, parent, force_hex);
 								});
 								file_entry.push({blob: sub_blob, ident, size, indent: this_indent, offset: absolute_offset});
 								if(ident[0] == 1 && ident[1] == 0x1D && ident[2] == 0) {
@@ -508,7 +512,6 @@ async function load_gamefile() {
 									}
 									indent -= 2;
 								}
-								open_tab(sub_blob, file_entry, false); // TODO my hope was that putting this here would run it automatically but apparently not :(
 								return true;
 							})(curr_addr)) break;
 						} else {
@@ -521,7 +524,7 @@ async function load_gamefile() {
 					}
 				} else {
 					if(part_header[24] == 0x53 && part_header[25] == 0x42 && part_header[26] == 0x6C && part_header[27] == 0x6B) {
-						fileelem.textContent = index_string+"Sound Bank: " + infile.name + " (" + (part_header[0x2e] + (part_header[0x2f] * 256)) + " sounds)";
+						fileelem.textContent = index_string+"Jak II: " + infile.name + " (" + (part_header[0x2e] + (part_header[0x2f] * 256)) + " sounds)";
 						let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
 						fileelem.classList.add("file-item");
 						fileelem.addEventListener("click", (e) => {
@@ -529,8 +532,33 @@ async function load_gamefile() {
 								othersel.classList.remove("file-item-selected");
 							}
 							fileelem.classList.add("file-item-selected");
-							set_sblk(part_blob);
+							set_sblk2(part_blob);
 						});
+
+						for(let othersel of document.querySelectorAll(".file-item-selected")) {
+							othersel.classList.remove("file-item-selected");
+						}
+						fileelem.classList.add("file-item-selected");
+						set_sblk2(part_blob);
+
+					} else if(infile_array[0x818] == 0x53 && infile_array[0x819] == 0x42 && infile_array[0x81A] == 0x6C && infile_array[0x81B] == 0x6B) {
+						fileelem.textContent = index_string+"Jak 1: " + infile.name + " (" + (infile_array[0x82E] + (infile_array[0x82F] * 256)) + " sounds)";
+						let part_blob = infile.slice(0x800).slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
+						fileelem.classList.add("file-item");
+						fileelem.addEventListener("click", (e) => {
+							for(let othersel of document.querySelectorAll(".file-item-selected")) {
+								othersel.classList.remove("file-item-selected");
+							}
+							fileelem.classList.add("file-item-selected");
+							set_sblk1(part_blob);
+						});
+
+						for(let othersel of document.querySelectorAll(".file-item-selected")) {
+							othersel.classList.remove("file-item-selected");
+						}
+						fileelem.classList.add("file-item-selected");
+						set_sblk1(part_blob);
+
 					} else if(part_header[32] == 0x53 && part_header[33] == 0x42 && part_header[34] == 0x76 && part_header[35] == 0x32) {
 						fileelem.textContent = index_string+"Music File: \"" + [...part_header.slice(44,48)].map((cc)=>{return String.fromCharCode(cc);}).join("") + "\" from " + infile.name;
 						let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
@@ -542,6 +570,14 @@ async function load_gamefile() {
 							fileelem.classList.add("file-item-selected");
 							set_sbv2(part_blob);
 						});
+
+						
+						for(let othersel of document.querySelectorAll(".file-item-selected")) {
+							othersel.classList.remove("file-item-selected");
+						}
+						fileelem.classList.add("file-item-selected");
+						set_sbv2(part_blob);
+
 					} else if(part_header[0] == 0x56 && part_header[1] == 0x41 && part_header[2] == 0x47 && part_header[3] == 0x70) {
 						let title = "";
 						for(let i = 32; i < 48; i++) {
@@ -558,6 +594,13 @@ async function load_gamefile() {
 							fileelem.classList.add("file-item-selected");
 							set_vagp(part_blob);
 						});
+
+						for(let othersel of document.querySelectorAll(".file-item-selected")) {
+							othersel.classList.remove("file-item-selected");
+						}
+						fileelem.classList.add("file-item-selected");
+						set_vagp(part_blob);
+
 					} else if(part_header[0] == 0x20 && part_header[1] == 0x4B && part_header[2] == 0x50 && part_header[3] == 0x56) {
 						fileelem.textContent = index_string+"KPV audio";
 						let part_blob = infile.slice(this_sectors[i]*2048, (this_sectors[i]+this_sizes[i])*2048);
@@ -569,13 +612,24 @@ async function load_gamefile() {
 							fileelem.classList.add("file-item-selected");
 							set_kpv(part_blob);
 						});
+
+						for(let othersel of document.querySelectorAll(".file-item-selected")) {
+							othersel.classList.remove("file-item-selected");
+						}
+						fileelem.classList.add("file-item-selected");
+						set_kpv(part_blob);
+
 					} else {
-						fileelem.textContent = index_string+"Unknown File: " + infile.name;
+						fileelem.textContent = index_string+"Unknown File: " + infile.name
+							 + " " + infile_array[0x818]
+							 + " " + infile_array[0x819]
+							 + " " + infile_array[0x81A]
+							 + " " + infile_array[0x81B];
 						
 						let close = document.createElement("span");
 						fileelem.appendChild(close);
 						close.textContent = "x";
-						fileelem.addEventListener("click", (e) => {
+						close.addEventListener("click", (e) => {
 							fileelem.remove();
 						});
 						
@@ -747,7 +801,7 @@ async function set_sbv2(blob) {
 			player.reverb_enabled = reverb_toggle.checked;
 			player.play();
 
-			add_rendering_context(ctx, "Saving: " + sbv2.tag + i + ".wav");
+			add_progress_bar(ctx, "Saving: " + sbv2.tag + i + ".wav");
 			
 			let buf = await ctx.startRendering();
 			saveAs(new Blob([to_wav(buf)], {type:'audio/wav'}), sbv2.tag + i + ".wav");
@@ -1798,23 +1852,14 @@ async function set_vagp(blob) {
 		
 		let savewav_button = document.createElement("input");
 		savewav_button.type = "button";
-		savewav_button.value = "Save as .wav*";
+		savewav_button.value = "Save as .wav";
 		savewav_button.addEventListener("click", async () => {
+
+			/*// progress bar. unfortunately broken for this
 			let ctx = new OfflineAudioContext(2, ((sound_length * 24 / 16 / sample_rate).toFixed(3) + 5)*48000, 48000);
+			add_progress_bar(ctx, "Saving: " + track_name + ".wav");
+			let buf = await ctx.startRendering();*/
 
-			/*let sound = decode_adpcm(file, this_sound_start, file.length, 16000);
-			let wav = new Blob([to_wav(sound.buffer)], {type:'audio/wav'});
-			let savewav_button = document.createElement("input");
-			savewav_button.type = "button";
-			savewav_button.value = "Save as .wav*";
-			savewav_button.addEventListener("click", async () => {
-				saveAs(wav, "Sound " + i + ".wav");
-			});
-			contentelem.appendChild(savewav_button);*/
-
-			add_rendering_context(ctx, "Saving: " + track_name + ".wav");
-			
-			let buf = await ctx.startRendering();
 			saveAs(new Blob([to_wav(sound.buffer)], {type:'audio/wav'}), track_name + ".wav");
 		});
 		contentelem.appendChild(savewav_button);
@@ -1887,14 +1932,16 @@ Sample rate: ${sample_rate} Hz`;
 	}*/
 }
 
-async function set_sblk(blob) {
+async function set_sblk1(blob) {
 	if(dispose_old) {
 		dispose_old();
 		dispose_old = null;
 	}
 
 	let file = new Uint8Array(await new Response(blob).arrayBuffer());
+
 	let dv = new DataView(file.buffer);
+
 	let contentelem = document.getElementById("content");
 	contentelem.innerHTML = "";
 
@@ -1907,6 +1954,7 @@ async function set_sblk(blob) {
 	//let sound_end = dv.getUint32(0x14, true) + sound_start;
 	let urls = [];
 	let elem = document.createElement("pre");
+
 	elem.textContent += "Sound start: " + sound_start+"\n";
 	for(let i = 0; i < num_sounds; i++) {
 		try {
@@ -1963,12 +2011,83 @@ async function set_sblk(blob) {
 	dispose_old = () => {for(let url of urls) URL.revokeObjectURL(url);};
 }
 
-async function open_tab(blob, parent, force_hex) {
-	for(let othersel of document.querySelectorAll(".file-item-selected")) {
-		othersel.classList.remove("file-item-selected");
+async function set_sblk2(blob) {
+	if(dispose_old) {
+		dispose_old();
+		dispose_old = null;
+	}
+
+	let file = new Uint8Array(await new Response(blob).arrayBuffer());
+
+	let dv = new DataView(file.buffer);
+
+	let contentelem = document.getElementById("content");
+	contentelem.innerHTML = "";
+
+	let header_size = dv.getUint32(0x08, true);
+	let num_sounds = dv.getUint16(0x16 + header_size, true);
+	let soundarr_ptr = dv.getUint32(0x1c + header_size, true) + header_size;
+	let soundarr2_ptr = dv.getUint32(0x20 + header_size, true) + header_size;
+	let soundarr3_ptr = dv.getUint32(0x34 + header_size, true) + header_size;
+	let sound_start = dv.getUint32(0x10, true);
+	//let sound_end = dv.getUint32(0x14, true) + sound_start;
+	let urls = [];
+	let elem = document.createElement("pre");
+
+	elem.textContent += "Sound start: " + sound_start+"\n";
+	for(let i = 0; i < num_sounds; i++) {
+		try {
+			elem.textContent += "Sound " + i + ":\n"
+			let sound_ptr = i * 12 + soundarr_ptr;
+			if(dv.getUint8(sound_ptr + 4) == 0) {
+				elem.textContent += "Blank!\n";
+			} else {
+				elem.textContent += "  Default volume: " + dv.getUint16(sound_ptr, true) + "\n";
+				elem.textContent += "  Default _2: " + dv.getUint16(sound_ptr+2, true) + "\n";
+				let num_sa2 = dv.getUint8(sound_ptr + 4);
+				let sound_2_ptr = dv.getInt32(sound_ptr + 8, true) + soundarr2_ptr;
+				elem.textContent += "  Num entries: " + num_sa2 + "\n";
+				for(let j = 0; j < num_sa2; j++) {
+					let entry2 = sound_2_ptr + j*8;
+					let e2_type = dv.getUint8(entry2 + 3); // Index into function table at 0x21188
+					elem.textContent += "    Type: " + e2_type + "\n";
+					if(e2_type == 1) {
+						let offset = dv.getUint32(entry2, true) & 0xFFFFFF;
+						elem.textContent += "      Offset: " + offset + "\n";
+						elem.textContent += "      Other: " + dv.getUint32(entry2 + 4, true) + "\n";
+						let sound_3_ptr = offset + soundarr3_ptr;
+						let this_sound_start = sound_start + dv.getUint32(sound_3_ptr + 0x10, true);
+						elem.textContent += "      Sound start: " + (this_sound_start - sound_start);
+						let sound = decode_adpcm(file, this_sound_start, file.length, 16000);
+						let wav = new Blob([to_wav(sound.buffer)], {type:'audio/wav'});
+						let savewav_button = document.createElement("input");
+						savewav_button.type = "button";
+						savewav_button.value = "Save as .wav*";
+						savewav_button.addEventListener("click", async () => {
+							saveAs(wav, "Sound " + i + ".wav");
+						});
+						contentelem.appendChild(savewav_button);
+						let url = URL.createObjectURL(wav);
+						urls.push(url);
+						let sound_elem = document.createElement("audio");
+						sound_elem.src = url;
+						sound_elem.controls = true;
+						contentelem.appendChild(elem);
+						elem = document.createElement("pre");
+						contentelem.appendChild(sound_elem);
+						
+					} else {
+						elem.textContent += "      " + dv.getUint32(entry2, true).toString(16).padStart(8, 0) + " " + dv.getUint32(entry2+4, true).toString(16).padStart(8, 0)+"\n";
+					}
+				}
+			}
+		} catch(e) {
+			elem.textContent += e + "\n";
 		}
-	partelem.classList.add("file-item-selected");
-	set_file(blob, parent, force_hex);
+		//await new Promise((resolve) => {setTimeout(resolve, 1);});
+	}
+	if(elem.textContent) contentelem.appendChild(elem);
+	dispose_old = () => {for(let url of urls) URL.revokeObjectURL(url);};
 }
 
 async function set_file(blob, parent, force_hex) {
