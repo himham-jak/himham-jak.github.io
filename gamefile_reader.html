@@ -7,14 +7,14 @@ Save modified files
 
 	MUS
 Inject MID
-Save Instruments as ???
+Save Instruments as MIS (musical instrument sample)
 Inject Instruments
 
 	SBK
-Seek past sound name list in Jak1 SBK
+Fix type system in Jak 1 SBK
 
 	VAG
-Fix track names
+Fix track names (more)
 Stop Button
 Inject ADPCM
 Inject WAV
@@ -1819,14 +1819,19 @@ async function set_vagp(blob) {
 		}
 
 		// new pointers/values based on https://wiki.xentax.com/index.php/VAG_Audio
-		let start_point		= idx;							// idx of "VAGp"
-		let version		= dv.getUint32(start_point + 4, false);			// version (should be 2)
+		let start_point		= idx;											// idx of "VAGp"
+		let version			= dv.getUint32(start_point + 4, false);			// version (should be 2)
 		let sound_offset	= dv.getUint32(start_point + 8, false);			// additional offset for sound_start? (should be 0)
 		let sound_length	= dv.getUint32(start_point + 12, false);		// length in bytes
 		let sample_rate		= dv.getUint32(start_point + 16, false);		// sample rate in hz
-		let track_name		= String.fromCharCode(dv.getUint16(start_point + 32));	// track name TODO: Make work
-		let sound_start		= start_point + 48;					// sound data start
-		let sound_end		= sound_start + sound_length;				// sound data end
+		let track_name 		= new Array();									// the name of the track
+			for(i=1; i<16; i++) {
+				track_name.push(dv.getUint8(start_point + 32 + 8*i, false)+0);
+			}
+			track_name		= new Uint8Array(track_name);
+			track_name 		= new TextDecoder("utf-8").decode(track_name);
+		let sound_start		= start_point + 48;								// sound data start
+		let sound_end		= sound_start + sound_length;					// sound data end
 
 		let pre = document.createElement("pre");
 		pre.textContent = `Track: ${track_name}, Offset: ${start_point}, Length: ${sound_length} bytes, ${(sound_length * 24 / 16 / sample_rate).toFixed(3)} seconds, Sample Rate: ${sample_rate} Hz\n`;
@@ -1972,7 +1977,7 @@ async function set_sblk1(blob) {
 					let entry2 = sound_2_ptr + j*8;
 					let e2_type = dv.getUint8(entry2 + 3); // Index into function table at 0x21188
 					elem.textContent += "    Type: " + e2_type + "\n";
-					//if(e2_type == 1) {
+					if(e2_type == 0) {
 						let offset = dv.getUint32(entry2, true) & 0xFFFFFF;
 						elem.textContent += "      Offset: " + offset + "\n";
 						elem.textContent += "      Other: " + dv.getUint32(entry2 + 4, true) + "\n";
@@ -1983,7 +1988,7 @@ async function set_sblk1(blob) {
 						let wav = new Blob([to_wav(sound.buffer)], {type:'audio/wav'});
 						let savewav_button = document.createElement("input");
 						savewav_button.type = "button";
-						savewav_button.value = "Save as .wav*";
+						savewav_button.value = "Save as .wav";
 						savewav_button.addEventListener("click", async () => {
 							saveAs(wav, "Sound " + i + ".wav");
 						});
@@ -1997,9 +2002,9 @@ async function set_sblk1(blob) {
 						elem = document.createElement("pre");
 						contentelem.appendChild(sound_elem);
 						
-					//} else {
-						//elem.textContent += "      " + dv.getUint32(entry2, true).toString(16).padStart(8, 0) + " " + dv.getUint32(entry2+4, true).toString(16).padStart(8, 0)+"\n";
-					//}
+					} else {
+						elem.textContent += "      " + dv.getUint32(entry2, true).toString(16).padStart(8, 0) + " " + dv.getUint32(entry2+4, true).toString(16).padStart(8, 0)+"\n";
+					}
 				}
 			}
 		} catch(e) {
@@ -2062,7 +2067,7 @@ async function set_sblk2(blob) {
 						let wav = new Blob([to_wav(sound.buffer)], {type:'audio/wav'});
 						let savewav_button = document.createElement("input");
 						savewav_button.type = "button";
-						savewav_button.value = "Save as .wav*";
+						savewav_button.value = "Save as .wav";
 						savewav_button.addEventListener("click", async () => {
 							saveAs(wav, "Sound " + i + ".wav");
 						});
