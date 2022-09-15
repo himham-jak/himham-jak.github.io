@@ -5,35 +5,34 @@ TODO
 Have tabs stay loaded, just hidden to save load time.
 Save modified files
 
-	MUS
-Inject MID
-	Decide on reasonable maximum size? 00
-Save Instruments as MIS (musical instrument sample)
-	Check out structure in HxD
-	Create file structure
-	Write save function
-Inject MIS
-	Decide on reasonable maximum size?
+MUS
+	Inject MID
+		Decide on reasonable maximum size? 00
+	Save Instruments as MIS (musical instrument sample)
+		Check out structure in HxD
+		Create file structure
+		Write save function
+	Inject MIS
+		Decide on reasonable maximum size?
 
-	SBK
-Fix type system in Jak 1 SBK
-	Why are there 3 types?
-	Why do some sounds end up 80hr long?
+SBK
+	Fix type system in Jak 1 SBK
+		Why are there 3 types?
+		Why do some sounds end up 80hr long?
 
-	VAG
-Fix track names (more)
-	Encoding is messed up somehow
-Stop Button
-	Figure out how to stop vagp while playing
-Inject ADPCM
-	Catch overflow error
-	Expand to double the size of the largest adpcm?
-	Write injection
-Inject WAV
-	Probably not feasible
-	Would need to write convertor in browser
-Support Jak II VAG
-	Check format differences in HxD
+VAG
+	Sounds won't play more than once
+	Stop Button
+		Figure out how to stop vagp while playing
+	Inject ADPCM
+		Catch overflow error
+		Expand to double the size of the largest adpcm?
+		Write injection
+	Inject WAV
+		Probably not feasible
+		Would need to write convertor in browser
+	Support Jak II VAG
+		Check format differences in HxD
 -->
 
 <html>
@@ -1839,9 +1838,9 @@ async function set_vagp(blob) {
 		let sound_offset	= dv.getUint32(start_point + 8, false);			// additional offset for sound_start? (should be 0)
 		let sound_length	= dv.getUint32(start_point + 12, false);		// length in bytes
 		let sample_rate		= dv.getUint32(start_point + 16, false);		// sample rate in hz
-		let track_name 		= new Array();									// the name of the track
-			for(i=1; i<16; i++) {
-				track_name.push(dv.getUint8(start_point + 32 + 8*i, false)+0);
+		let track_name 		= new Array();									// the name of the track (this is jank)
+			for(i=0; i<16; i++) {
+				track_name.push(dv.getUint8(start_point + 32 + i, false)+0);
 			}
 			track_name		= new Uint8Array(track_name);
 			track_name 		= new TextDecoder("utf-8").decode(track_name);
@@ -1884,13 +1883,25 @@ async function set_vagp(blob) {
 		});
 		contentelem.appendChild(savewav_button);
 		
-		let replace_button = document.createElement("input");
-		replace_button.type = "button";
-		replace_button.value = "Inject*";
-		replace_button.addEventListener("click", () => {
-			document.getElementById('my_file').click();
+		let injection = document.createElement("input");
+		injection.type = "file";
+		injection.addEventListener("change", () => {
+			injection_label.textContent = " Injection: " + injection.files[0].name;
 		});
-		contentelem.appendChild(replace_button);
+		contentelem.appendChild(injection);
+		injection.style.display = "none";
+		injection.setAttribute("accept", ".wav,.adpcm");
+		
+		let injection_button = document.createElement("input");
+		injection_button.type = "button";
+		injection_button.value = "Inject*";
+		injection_button.addEventListener("click", () => {
+			injection.click();
+		});
+		contentelem.appendChild(injection_button);
+
+		let injection_label = document.createElement("pre");
+		contentelem.appendChild(injection_label);
 	}
 }
 
