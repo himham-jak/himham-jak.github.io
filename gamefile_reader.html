@@ -5,10 +5,11 @@ TODO
 Have tabs stay loaded, just hidden to save load time.
 Save modified files
 Have play buttons pop up for the injections when uploaded
+Write inject_data(file, injection, start, length)
 
 MUS
 	Inject MID
-		Decide on reasonable maximum size? 00
+		Decide on reasonable maximum size?
 	Save Instruments as MIS (musical instrument sample)
 		Check out structure in HxD
 		Create file structure
@@ -1867,7 +1868,7 @@ async function set_vagp(blob) {
 		let stop_button = document.createElement("input");
 		stop_button.type = "button";
 		stop_button.value = "Stop*";
-		
+		// source.stop() //?
 		contentelem.appendChild(stop_button);
 		
 		let savewav_button = document.createElement("input");
@@ -1888,10 +1889,15 @@ async function set_vagp(blob) {
 		injection.type = "file";
 		injection.addEventListener("change", () => {
 			injection_label.textContent = " Injection: " + injection.files[0].name;
+			/*if(injection.files[0].length > sound_length) {// size check
+				// throw error
+			}
+			// inject_data(file, injection.files[0], sound_start);*/
+			// sound = decode_adpcm(file, sound_start, sound_end, sample_rate);
 		});
 		contentelem.appendChild(injection);
 		injection.style.display = "none";
-		injection.setAttribute("accept", ".wav,.adpcm");
+		injection.setAttribute("accept", ".adpcm"); // later? : .wav,.adpcm
 		
 		let injection_button = document.createElement("input");
 		injection_button.type = "button";
@@ -1902,6 +1908,7 @@ async function set_vagp(blob) {
 		contentelem.appendChild(injection_button);
 
 		let injection_label = document.createElement("pre");
+		injection_label.style.display="inline";
 		contentelem.appendChild(injection_label);
 	}
 }
