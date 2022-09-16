@@ -407,7 +407,7 @@ async function load_gamefile() {
 	});
 	
 	//document.getElementById("loadmenu").style.display = "none";
-	document.getElementById("savemenu").style.display = "inline";
+	//document.getElementById("savemenu").style.display = "inline";
 	
 	for (let i=0; i < document.getElementById("fileinput").files.length; i++) {
 		infile = document.getElementById("fileinput").files[i];
@@ -580,7 +580,7 @@ async function load_gamefile() {
 								othersel.classList.remove("file-item-selected");
 							}
 							fileelem.classList.add("file-item-selected");
-							set_sbv2(part_blob);
+							set_sbv2(part_blob, infile.name);
 						});
 
 						
@@ -588,7 +588,7 @@ async function load_gamefile() {
 							othersel.classList.remove("file-item-selected");
 						}
 						fileelem.classList.add("file-item-selected");
-						set_sbv2(part_blob);
+						set_sbv2(part_blob, infile.name);
 
 					} else if(part_header[0] == 0x56 && part_header[1] == 0x41 && part_header[2] == 0x47 && part_header[3] == 0x70) {
 						let title = "";
@@ -654,7 +654,7 @@ async function load_gamefile() {
 	}
 }
 
-async function set_sbv2(blob) {
+async function set_sbv2(blob, filename) {
 	if(dispose_old) {
 		dispose_old();
 		dispose_old = null;
@@ -680,9 +680,18 @@ async function set_sbv2(blob) {
 	
 	let stop_playing = null;
 	dispose_old = ()=>{if(stop_playing) stop_playing();};
+		
+	let save_button = document.createElement("input");
+	save_button.type = "button";
+	save_button.value = "Save Original File";
+	save_button.addEventListener("click", async () => {
+		var fileblob = await new Blob([file],{type:"text/plain;charset=utf-8"});
+		saveAs(fileblob, filename);
+	});
+	contentelem.appendChild(save_button);
 	
 	let num_midis = sbv2.tracks.length;
-	for(let i = 0; i < num_midis; i++) {
+	for(let i = 1; i < num_midis; i++) { // skip track 0
 		let track = sbv2.tracks[i];
 		
 		let tempo = track.tempo;
@@ -927,12 +936,48 @@ async function set_sbv2(blob) {
 			saveAs(new Blob([outfile], {type:"audio/midi"}), [...file.slice(44,48)].map((cc)=>{return String.fromCharCode(cc);}).join("") + i + '.mid');
 		});
 		contentelem.appendChild(savemid_button);
+
+		let injectionmid = document.createElement("input");
+		injectionmid.type = "file";
+		injectionmid.addEventListener("change", async () => {
+			// size check
+			if(injectionmid.files[0].size > sound_length) {
+				// throw error
+				console.log("too big: " + injectionmid.files[0].size + " > " + sound_length);
+				injection_label.textContent = " Error: Selected injection exceeds the original size of the sound.";
+				return 0;
+			}
+
+			// let the user see their injection
+			injection_label.textContent = " Injection: " + injectionmid.files[0].name;
+			save_button.value = "Save Modifications";
+
+			// overwrite the data
+			let vial = injectionmid.files[0].slice(); // this slice turns the file into a blob
+			vial  = new Uint8Array(await new Response(vial).arrayBuffer()); // now make it a uint8array
+			//file = await inject_data(file, vial, sound_start, sound_end);
+
+			// reassign the sound to the injection
+			//sound = decode_adpcm(file, sound_start, sound_end, sample_rate);
+		});
+		contentelem.appendChild(injectionmid);
+		injectionmid.style.display = "none";
+		injectionmid.setAttribute("accept", ".mid");
 		
-		let insertmid_button = document.createElement("input");
-		insertmid_button.type = "button";
-		insertmid_button.value = "Inject .mid*";
-		
-		contentelem.appendChild(insertmid_button);
+		let injectmid_button = document.createElement("input");
+		injectmid_button.type = "button";
+		injectmid_button.value = "Inject .mid*";
+		injectmid_button.addEventListener("click", () => {
+			injectionmid.click();
+		});
+		contentelem.appendChild(injectmid_button);
+
+		let injection_label = document.createElement("pre");
+		injection_label.style.display="inline";
+		contentelem.appendChild(injection_label);
+
+		let linebr = document.createElement("br");
+		contentelem.appendChild(linebr);
 		
 		let vis_button = document.createElement("input");
 		vis_button.type = "button";
@@ -1252,11 +1297,45 @@ Sound length: ${sound_length}
 			});
 			button.style.marginLeft = "40px";
 			contentelem.appendChild(button);
+
+			let injectionmis = document.createElement("input");
+			injectionmis.type = "file";
+			injectionmis.addEventListener("change", async () => {
+				/*// size check
+				if(injectionmis.files[0].size > sound_length) {
+					// throw error
+					console.log("too big: " + injectionmis.files[0].size + " > " + sound_length);
+					injection_label2.textContent = " Error: Selected injection exceeds the original size of the sound.";
+					return 0;
+				}*/
+
+				// let the user see their injection
+				injection_label2.textContent = " Injection: " + injectionmis.files[0].name;
+				save_button.value = "Save Modifications";
+
+				// overwrite the data
+				let vial = injectionmis.files[0].slice(); // this slice turns the file into a blob
+				vial  = new Uint8Array(await new Response(vial).arrayBuffer()); // now make it a uint8array
+				//file = await inject_data(file, vial, sound_start, sound_end);
+
+				// reassign the sound to the injection
+				//sound = decode_adpcm(file, sound_start, sound_end, sample_rate);
+			});
+			contentelem.appendChild(injectionmis);
+			injectionmis.style.display = "none";
+			injectionmis.setAttribute("accept", ".mis");
 			
-			let button2 = document.createElement("input");
-			button2.type = "button";
-			button2.value = "Inject .mis*";
-			contentelem.appendChild(button2);
+			let injectmis_button = document.createElement("input");
+			injectmis_button.type = "button";
+			injectmis_button.value = "Inject .mis*";
+			injectmis_button.addEventListener("click", () => {
+				injectionmis.click();
+			});
+			contentelem.appendChild(injectmis_button);
+
+			let injection_label2 = document.createElement("pre");
+			injection_label2.style.display="inline";
+			contentelem.appendChild(injection_label2);
 		}
 	}
 }
@@ -1898,6 +1977,7 @@ async function set_vagp(blob, filename) {
 			if(injection.files[0].size > sound_length) {
 				// throw error
 				console.log("too big: " + injection.files[0].size + " > " + sound_length);
+				injection_label.textContent = " Error: Selected injection exceeds the original size of the sound.";
 				return 0;
 			}
 
