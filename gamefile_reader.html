@@ -4,8 +4,6 @@ TODO
 
 Have tabs stay loaded, just hidden to save load time.
 Save modified files
-Have play buttons pop up for the injections when uploaded
-Write inject_data(file, injection, start, length)
 
 MUS
 	Inject MID
@@ -23,13 +21,11 @@ SBK
 		Why do some sounds end up 80hr long?
 
 VAG
-	Sounds won't play more than once
 	Stop Button
 		Figure out how to stop vagp while playing
 	Inject ADPCM
-		Catch overflow error
 		Expand to double the size of the largest adpcm?
-		Write injection
+		Test injection
 	Inject WAV
 		Probably not feasible
 		Would need to write convertor in browser
@@ -48,7 +44,7 @@ VAG
 <script>
 let logging_enabled = true;
 function do_log(...args) {
-	if(logging_enabled) console.log(...args);
+	if(logging_enabled) {console.log(...args);}
 }
 
 THREE.ShaderChunk.color_pars_vertex = `
@@ -608,14 +604,14 @@ async function load_gamefile() {
 								othersel.classList.remove("file-item-selected");
 							}
 							fileelem.classList.add("file-item-selected");
-							set_vagp(part_blob);
+							set_vagp(part_blob, infile.name);
 						});
 
 						for(let othersel of document.querySelectorAll(".file-item-selected")) {
 							othersel.classList.remove("file-item-selected");
 						}
 						fileelem.classList.add("file-item-selected");
-						set_vagp(part_blob);
+						set_vagp(part_blob, infile.name);
 
 					} else if(part_header[0] == 0x20 && part_header[1] == 0x4B && part_header[2] == 0x50 && part_header[3] == 0x56) {
 						fileelem.textContent = index_string+"KPV audio";
@@ -1810,7 +1806,7 @@ class SBv2Decoder {
 	}
 }
 
-async function set_vagp(blob) {
+async function set_vagp(blob, filename) {
 	if(dispose_old) {
 		dispose_old();
 		dispose_old = null;
@@ -1828,6 +1824,15 @@ async function set_vagp(blob) {
 	    array[index+3] == 0x70
 	  );
 	}
+		
+	let save_button = document.createElement("input");
+	save_button.type = "button";
+	save_button.value = "Save Original File";
+	save_button.addEventListener("click", async () => {
+		var fileblob = await new Blob([file],{type:"text/plain;charset=utf-8"});
+		saveAs(fileblob, filename);
+	});
+	contentelem.appendChild(save_button);
 	
 	for(idx = 0; idx < file.length; idx++) {
 		if (!findVAGp(file, idx)) {
@@ -1857,8 +1862,8 @@ async function set_vagp(blob) {
 		play_button.type = "button";
 		play_button.value = "Play";
 		let sound = decode_adpcm(file, sound_start, sound_end, sample_rate);
-		let source = audio_context.createBufferSource();
 		play_button.addEventListener("click", () => {
+			let source = audio_context.createBufferSource();
 			source.buffer = sound.buffer;
 			source.connect(audio_context.destination);
 			source.start();
@@ -1887,13 +1892,26 @@ async function set_vagp(blob) {
 		
 		let injection = document.createElement("input");
 		injection.type = "file";
-		injection.addEventListener("change", () => {
-			injection_label.textContent = " Injection: " + injection.files[0].name;
-			/*if(injection.files[0].length > sound_length) {// size check
+		injection.addEventListener("change", async () => {
+			
+			// size check
+			if(injection.files[0].size > sound_length) {
 				// throw error
+				console.log("too big: " + injection.files[0].size + " > " + sound_length);
+				return 0;
 			}
-			// inject_data(file, injection.files[0], sound_start);*/
-			// sound = decode_adpcm(file, sound_start, sound_end, sample_rate);
+
+			// let the user see their injection
+			injection_label.textContent = " Injection: " + injection.files[0].name;
+			save_button.value = "Save Modifications";
+
+			// overwrite the data
+			let vial = injection.files[0].slice(); // this slice turns the file into a blob
+			vial  = new Uint8Array(await new Response(vial).arrayBuffer()); // now make it a uint8array
+			file = await inject_data(file, vial, sound_start, sound_end);
+
+			// reassign the sound to the injection
+			sound = decode_adpcm(file, sound_start, sound_end, sample_rate);
 		});
 		contentelem.appendChild(injection);
 		injection.style.display = "none";
@@ -1901,7 +1919,7 @@ async function set_vagp(blob) {
 		
 		let injection_button = document.createElement("input");
 		injection_button.type = "button";
-		injection_button.value = "Inject*";
+		injection_button.value = "Inject";
 		injection_button.addEventListener("click", () => {
 			injection.click();
 		});
@@ -1911,6 +1929,16 @@ async function set_vagp(blob) {
 		injection_label.style.display="inline";
 		contentelem.appendChild(injection_label);
 	}
+}
+
+async function inject_data(file, injection, start, end) {
+	for (i = start; i < injection.length + start; i++) { // overwrite with the injection data
+		file[i] = injection[i-start];
+	}
+	for (i; i < end; i++) { // fill in the extra with 0 if needed
+		file[i] = 0;
+	}
+	return file;
 }
 
 async function set_kpv(blob) {
