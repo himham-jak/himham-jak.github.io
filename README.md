@@ -7,11 +7,13 @@ The editor currently supports the following actions:
 |               | Opening       | Playing       | Exporting    | Injecting      | Saving       |
 | ------------- | ------------- |  ------------- | ------------- | ------------- | ------------- |
 | Jak 1 VAGWAD  |           ✔️  |           ✔️  |           ✔️  |           ✔️  |           ✔️  |
-| Jak 2 VAGWAD  |           ❌  |           ❌  |           ❌  |           ❌  |           ❌  |
+| Jak II VAGWAD  |           ❌  |           ❌  |           ❌  |           ❌  |           ❌  |
+| Jak 3 VAGWAD  |           ❌  |           ❌  |           ❌  |           ❌  |           ❌  |
 | Jak 1 SBK     |           ✔️  |           ❌  |           ❌  |           ❌  |           ❌  |
-| Jak 2 SBK     |           ✔️  |           ✔️  |           ✔️  |           ❌  |           ❌  |
+| Jak II SBK     |           ✔️  |           ✔️  |           ✔️  |           ❌  |           ❌  |
+| Jak 3 SBK     |           ✔️  |           ✔️  |           ✔️  |           ❌  |           ❌  |
 | Jak 1 MUS     |           ✔️  |           ✔️  |           ✔️  |           ❌  |           ✔️  |
-| Jak 2 MUS     |           ✔️  |           ✔️  |           ✔️  |           ❌  |           ✔️  |
+| Jak II MUS     |           ✔️  |           ✔️  |           ✔️  |           ❌  |           ✔️  |
 
 ## Tips:
 
