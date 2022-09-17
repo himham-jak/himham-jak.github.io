@@ -6,7 +6,7 @@ The editor currently supports the following actions:
 
 |               | Opening       | Playing       | Exporting    | Injecting      | Saving       |
 | ------------- | ------------- |  ------------- | ------------- | ------------- | ------------- |
-| Jak 1 VAGWAD  |           ✔️  |           ❌  |           ❌  |           ✔️  |           ✔️  |
+| Jak 1 VAGWAD  |           ✔️  |           ✔️  |           ✔️  |           ✔️  |           ✔️  |
 | Jak 2 VAGWAD  |           ❌  |           ❌  |           ❌  |           ❌  |           ❌  |
 | Jak 1 SBK     |           ✔️  |           ❌  |           ❌  |           ❌  |           ❌  |
 | Jak 2 SBK     |           ✔️  |           ✔️  |           ✔️  |           ❌  |           ❌  |
@@ -21,4 +21,10 @@ All playback for input and output should have the following settings:
 - Sample rate of 48khz
 
 To inject VAGWAD, you'll need to convert a wav with the above settings into the adpcm headerless audio format. This can be accomplished by using 
-the <a href="https://github.com/himham-jak/adpcm/">converter</a> from the PS2SDK. FFMPEG does not currrently support the correct codec for this.
+the <a href="https://github.com/himham-jak/adpcm/">converter</a> from the PS2SDK. FFMPEG does not currently support the correct codec for this.
+
+## Known Issues:
+- Jak 1 SBK is not read perfectly. There should be only 2 types of grains, but there are 3. Also some sounds read as 80hr long.
+- Jak 1 VAGWAD doesn't have a working stop button.
+- Jak 1 COMMON.MUS fails to open.
+- Jak 1 VAGWAD can only inject sounds smaller than the sound they're replacing.
