@@ -11,9 +11,10 @@ The editor currently supports the following actions:
 | Jak 3 VAGWAD  |           ❌  |           ❌  |           ❌  |           ❌  |           ❌  |
 | Jak 1 SBK     |           ✔️  |           ❌  |           ❌  |           ❌  |           ❌  |
 | Jak II SBK     |           ✔️  |           ✔️  |           ✔️  |           ❌  |           ❌  |
-| Jak 3 SBK     |           ✔️  |           ✔️  |           ✔️  |           ❌  |           ❌  |
+| Jak 3 SBK     |           ❌  |           ❌  |           ❌  |           ❌  |           ❌  |
 | Jak 1 MUS     |           ✔️  |           ✔️  |           ✔️  |           ❌  |           ✔️  |
 | Jak II MUS     |           ✔️  |           ✔️  |           ✔️  |           ❌  |           ✔️  |
+| Jak X Anything |           ❌  |           ❌  |           ❌  |           ❌  |           ❌  |
 
 ## Tips:
 
