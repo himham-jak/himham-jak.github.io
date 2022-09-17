@@ -30,7 +30,7 @@ The MUS injections will support two file types:
 - *.mid
 - *.mis
 
-Mid is the standard MIDI format, explained <a href="">here</a>, though all instruments will be ignored.
+Mid is the standard MIDI format, explained <a href="https://faydoc.tripod.com/formats/mid.htm">here</a>, though all instruments will be ignored.
 Mis is a custom format used by this project. It is composed of a headerless Musical Instrument Sample, an excerpt from a standard Mid file.
 
 ## Known Issues:
