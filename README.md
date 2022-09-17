@@ -26,6 +26,13 @@ All playback for input and output should have the following settings:
 To inject VAGWAD, you'll need to convert a wav with the above settings into the adpcm headerless audio format. This can be accomplished by using 
 the <a href="https://github.com/himham-jak/adpcm/">converter</a> from the PS2SDK. FFMPEG does not currently support the correct codec for this.
 
+The MUS injections will support two file types:
+- *.mid
+- *.mis
+
+Mid is the standard MIDI format, explained <a href="">here</a>, though all instruments will be ignored.
+Mis is a custom format used by this project. It is composed of a headerless Musical Instrument Sample, an excerpt from a standard Mid file.
+
 ## Known Issues:
 - Jak 1 SBK is not read perfectly. There should be only 2 types of grains, but there are 3. Also some sounds read as 80hr long.
 - Jak 1 VAGWAD doesn't have a working stop button.
