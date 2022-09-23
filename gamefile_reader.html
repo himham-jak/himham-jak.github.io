@@ -1372,7 +1372,7 @@ Sample Region Length: 0x${sound_length.toString(16)}
 
 			outfile = outfile.subarray(0, o);
 			
-			saveAs(new Blob([outfile], {type:"text/plain;charset=utf-8"}), "Instrument" + i + '.mis');
+			saveAs(new Blob([outfile], {type:"text/plain;charset=utf-8"}), filename.split(".")[0] + "_Instrument" + i + '.mis');
 		});
 		contentelem.appendChild(savemis_button);
 
