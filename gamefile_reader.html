@@ -1946,13 +1946,19 @@ async function set_vagp(blob, filename) {
 			source.buffer = sound.buffer;
 			source.connect(audio_context.destination);
 			source.start();
+			
+			stop_playing = () => {
+				source.stop()
+				}
 		});
 		contentelem.appendChild(play_button);
 		
 		let stop_button = document.createElement("input");
 		stop_button.type = "button";
 		stop_button.value = "Stop*";
-		// source.stop() //?
+		stop_button.addEventListener("click", () => {
+			if(stop_playing) { stop_playing(); stop_playing = null; }
+		});
 		contentelem.appendChild(stop_button);
 		
 		let savewav_button = document.createElement("input");
