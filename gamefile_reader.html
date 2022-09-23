@@ -941,20 +941,20 @@ async function set_sbv2(blob, filename) {
 		injectionmid.type = "file";
 		injectionmid.addEventListener("change", async () => {
 			// size check
-			if(injectionmid.files[0].size > sound_length) {
+			/*if(injectionmid.files[0].size > sound_length) {
 				// throw error
 				console.log("too big: " + injectionmid.files[0].size + " > " + sound_length);
 				injection_label.textContent = " Error: Selected injection exceeds the original size of the sound.";
 				return 0;
-			}
+			}*/
 
 			// let the user see their injection
 			injection_label.textContent = " Injection: " + injectionmid.files[0].name;
 			save_button.value = "Save Modifications";
 
 			// overwrite the data
-			let vial = injectionmid.files[0].slice(); // this slice turns the file into a blob
-			vial  = new Uint8Array(await new Response(vial).arrayBuffer()); // now make it a uint8array
+			//let vial = injectionmid.files[0].slice(); // this slice turns the file into a blob
+			//vial  = new Uint8Array(await new Response(vial).arrayBuffer()); // now make it a uint8array
 			//file = await inject_data(file, vial, sound_start, sound_end);
 
 			// reassign the sound to the injection
@@ -1218,10 +1218,23 @@ ${verts_str}${faces_str}`], {type:'text/plain'}), sbv2.tag + i + '.ply');
 	contentelem.appendChild(midi_select);
 	
 	let pre = document.createElement("pre");
-	pre.textContent = `Sound start: ${sound_start}
-Sound length: ${sound_length}
+	pre.textContent = `Sample Region Start: 0x${sound_start.toString(16)}
+Sample Region Length: 0x${sound_length.toString(16)}
 `;
 	contentelem.appendChild(pre);
+
+	function findEnd(array, index) {
+	  return (
+	    array[index]   == 0x00 &&
+	    array[index+1] == 0x07 &&
+	    array[index+2] == 0x77 &&
+	    array[index+3] == 0x77 &&
+	    array[index+4] == 0x77 &&
+	    array[index+5] == 0x77 &&
+	    array[index+6] == 0x77 &&
+	    array[index+7] == 0x77
+	  );
+	}
 	
 	for(let i = 0; i < num_instruments; i++) {
 		let instrument_volume = file[instruments_start + (i*0x8) + 0x1];
@@ -1249,6 +1262,16 @@ Sound length: ${sound_length}
 			let region_adsr1 = dv.getUint16(region_offset + j*0x18 + 0xA, true);
 			let region_adsr2 = dv.getUint16(region_offset + j*0x18 + 0xC, true);
 			let region_flags = dv.getUint16(region_offset + j*0x18 + 0xE, true);
+
+			for(let m = sound_start+region_sample_offset; file.length; m++) {
+				if (!findEnd(file, m)) {
+		    			continue;
+				}
+				sample_end = m;
+				break;
+			}
+
+			let sample_length = sample_end - (region_sample_offset+sound_start);
 			
 			let region_obj = {
 				volume: region_volume / 127,
@@ -1266,11 +1289,14 @@ Sound length: ${sound_length}
 			let region_elem = document.createElement("pre");
 			let region_text = `  ==Notes ${region_note_start}-${region_note_end}==\n`;
 			region_text += `  Volume: ${region_volume}\n`;
-			region_text += `  Pitch bytes: ${region_pitch_a} ${region_pitch_b}\n`;
-			region_text += `  Sample data offset: 0x${region_sample_offset.toString(16)}\n`;
+			region_text += `  Pitch Bytes: ${region_pitch_a} ${region_pitch_b}\n`;
+			region_text += `  Sample Offset: 0x${(region_sample_offset+sound_start).toString(16)}\n`;
+			region_text += `  Sample Length: 0x${sample_length.toString(16)}\n`;
+			region_text += `  Sample End: 0x${sample_end.toString(16)}\n`;
 			region_text += `  ADSR1: 0x${region_adsr1.toString(16).padStart(4,0)}\n`;
 			region_text += `  ADSR2: 0x${region_adsr2.toString(16).padStart(4,0)}\n`;
 			region_text += `  Flags: 0x${region_flags.toString(16).padStart(4,0)}\n`;
+
 			region_text += `  Bytes: [${[...file.subarray(region_offset+j*0x18,region_offset+(j+1)*0x18)].map(number => {return number.toString(16).padStart(2,'0')}).join(" ")}]\n`;
 			region_elem.textContent = region_text;
 			contentelem.appendChild(region_elem);
@@ -1287,7 +1313,7 @@ Sound length: ${sound_length}
 				source.loop = sound.loop;
 				source.loopStart = sound.loop_start;
 				source.loopEnd = sound.loop_end;
-				source.playbackRate.value = handle_midi_pitch(region_pitch_a, region_pitch_b, Math.floor((region_note_start + region_note_end) / 2)) / 4096;
+				source.playbackRate.value = handle_midi_pitch(region_obj.pitch_a, region_obj.pitch_b, Math.floor((region_obj.note_start + region_obj.note_end) / 2)) / 4096;
 				source.start();
 				let mouseup = () => {
 					document.removeEventListener("mouseup", mouseup);
@@ -1301,25 +1327,37 @@ Sound length: ${sound_length}
 			let injectionmis = document.createElement("input");
 			injectionmis.type = "file";
 			injectionmis.addEventListener("change", async () => {
-				/*// size check
-				if(injectionmis.files[0].size > sound_length) {
+				// size check
+				if(injectionmis.files[0].size > sample_length) {
 					// throw error
-					console.log("too big: " + injectionmis.files[0].size + " > " + sound_length);
+					console.log("too big: " + injectionmis.files[0].size + " > " + sample_length);
 					injection_label2.textContent = " Error: Selected injection exceeds the original size of the sound.";
 					return 0;
-				}*/
+				}
 
 				// let the user see their injection
 				injection_label2.textContent = " Injection: " + injectionmis.files[0].name;
 				save_button.value = "Save Modifications";
 
 				// overwrite the data
-				let vial = injectionmis.files[0].slice(); // this slice turns the file into a blob
-				vial  = new Uint8Array(await new Response(vial).arrayBuffer()); // now make it a uint8array
-				//file = await inject_data(file, vial, sound_start, sound_end);
+				let vial1 = injectionmis.files[0].slice(0x08,0x20); // this slice turns the file into a blob and holds the 24 bytes of instrument info
+				let vial2 = injectionmis.files[0].slice(0x30); // this slice turns the file into a blob and holds the sample adpcm data
+
+				vial1 = new Uint8Array(await new Response(vial1).arrayBuffer()); // now make it a uint8array
+				vial2 = new Uint8Array(await new Response(vial2).arrayBuffer()); // now make it a uint8array
+
+
+				let dv1 = new DataView(vial1.buffer); // make a data buffer
+
+				file = await inject_data(file, vial1, region_offset+j*0x18, region_offset+(j+1)*0x18); //inject the instrument info
+				file = await inject_data(file, vial2, sound_start+region_sample_offset, sample_end); // inject the sample adpcm data
 
 				// reassign the sound to the injection
-				//sound = decode_adpcm(file, sound_start, sound_end, sample_rate);
+				//region_obj.note_start: = 0;	// these two basically don't change
+				//region_obj.note_end: = 127;
+				region_obj.pitch_a = dv1.getInt8(0x2, false); // use the data buffer
+				region_obj.pitch_b = dv1.getInt8(0x3, false); // use the data buffer
+				region_obj.sound = decode_adpcm(vial2, 0, sample_length, 48000);
 			});
 			contentelem.appendChild(injectionmis);
 			injectionmis.style.display = "none";
