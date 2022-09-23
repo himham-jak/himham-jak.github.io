@@ -1368,11 +1368,11 @@ Sample Region Length: 0x${sound_length.toString(16)}
 				outfile[o+d] = file.subarray(sound_start+region_sample_offset, sample_end)[d]; // write the sample data
 			}
 
-			o += sample_length - 0x20; // not sure why extra 16 bytes but cut em out
+			o += sample_length - 0x20; // not sure why extra 32 bytes but cut em out
 
 			outfile = outfile.subarray(0, o);
 			
-			saveAs(new Blob([outfile], {type:"text/plain;charset=utf-8"}), "test" + '.mis');
+			saveAs(new Blob([outfile], {type:"text/plain;charset=utf-8"}), "Instrument" + i + '.mis');
 		});
 		contentelem.appendChild(savemis_button);
 
