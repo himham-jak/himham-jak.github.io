@@ -1323,6 +1323,58 @@ Sample Region Length: 0x${sound_length.toString(16)}
 			});
 			button.style.marginLeft = "40px";
 			contentelem.appendChild(button);
+		
+		let savemis_button = document.createElement("input");
+		savemis_button.type = "button";
+		savemis_button.value = "Save as .mis";
+		savemis_button.addEventListener("click", () => {
+			let outfile = new Uint8Array(100000);
+			let outdv = new DataView(outfile.buffer);
+			let o = 0;
+
+			outfile[o++] = 'M'.charCodeAt(0);
+			outfile[o++] = 'I'.charCodeAt(0);
+			outfile[o++] = 'S'.charCodeAt(0);
+			outfile[o++] = '-'.charCodeAt(0);
+			outfile[o++] = 'J'.charCodeAt(0);
+			outfile[o++] = 'A'.charCodeAt(0);
+			outfile[o++] = 'K'.charCodeAt(0);
+			outfile[o++] = '1'.charCodeAt(0);
+
+			for(d = 0; d < 0x18; d++) {
+				outfile[o+d] = file.subarray(region_offset+j*0x18,region_offset+(j+1)*0x18)[d]; // write the instrument data
+			}
+
+			o += 0x18;
+			
+			outfile[o++] = 'S'.charCodeAt(0);
+			outfile[o++] = 'A'.charCodeAt(0);
+			outfile[o++] = 'M'.charCodeAt(0);
+			outfile[o++] = 'P'.charCodeAt(0);
+			outfile[o++] = 'L'.charCodeAt(0);
+			outfile[o++] = 'E'.charCodeAt(0);
+			outfile[o++] = '-'.charCodeAt(0);
+			outfile[o++] = 'M'.charCodeAt(0);
+			outfile[o++] = 'O'.charCodeAt(0);
+			outfile[o++] = 'N'.charCodeAt(0);
+			outfile[o++] = 'O'.charCodeAt(0);
+			outfile[o++] = 'A'.charCodeAt(0);
+			outfile[o++] = 'D'.charCodeAt(0);
+			outfile[o++] = 'P'.charCodeAt(0);
+			outfile[o++] = 'C'.charCodeAt(0);
+			outfile[o++] = 'M'.charCodeAt(0);
+
+			for(d = 0; d < sample_length; d++) {
+				outfile[o+d] = file.subarray(sound_start+region_sample_offset, sample_end)[d]; // write the sample data
+			}
+
+			o += sample_length - 0x20; // not sure why extra 16 bytes but cut em out
+
+			outfile = outfile.subarray(0, o);
+			
+			saveAs(new Blob([outfile], {type:"text/plain;charset=utf-8"}), "test" + '.mis');
+		});
+		contentelem.appendChild(savemis_button);
 
 			let injectionmis = document.createElement("input");
 			injectionmis.type = "file";
@@ -1365,7 +1417,7 @@ Sample Region Length: 0x${sound_length.toString(16)}
 			
 			let injectmis_button = document.createElement("input");
 			injectmis_button.type = "button";
-			injectmis_button.value = "Inject .mis*";
+			injectmis_button.value = "Inject .mis";
 			injectmis_button.addEventListener("click", () => {
 				injectionmis.click();
 			});
