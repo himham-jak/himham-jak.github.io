@@ -958,7 +958,7 @@ async function set_sbv2(blob, filename) {
 			//file = await inject_data(file, vial, sound_start, sound_end);
 
 			// reassign the sound to the injection
-			//sound = decode_adpcm(file, sound_start, sound_end, sample_rate);
+			sbv2 = new SBv2Decoder(file);
 		});
 		contentelem.appendChild(injectionmid);
 		injectionmid.style.display = "none";
@@ -1271,7 +1271,7 @@ Sample Region Length: 0x${sound_length.toString(16)}
 				break;
 			}
 
-			let sample_length = sample_end - (region_sample_offset+sound_start);
+			let sample_length = sample_end - (region_sample_offset+sound_start) - 0x20;
 			
 			let region_obj = {
 				volume: region_volume / 127,
@@ -1297,7 +1297,7 @@ Sample Region Length: 0x${sound_length.toString(16)}
 			region_text += `  ADSR2: 0x${region_adsr2.toString(16).padStart(4,0)}\n`;
 			region_text += `  Flags: 0x${region_flags.toString(16).padStart(4,0)}\n`;
 
-			region_text += `  Bytes: [${[...file.subarray(region_offset+j*0x18,region_offset+(j+1)*0x18)].map(number => {return number.toString(16).padStart(2,'0')}).join(" ")}]\n`;
+			region_text += `  Info: [${[...file.subarray(region_offset+j*0x18,region_offset+(j+1)*0x18)].map(number => {return number.toString(16).padStart(2,'0')}).join(" ")}]\n`;
 			region_elem.textContent = region_text;
 			contentelem.appendChild(region_elem);
 			
@@ -1368,7 +1368,7 @@ Sample Region Length: 0x${sound_length.toString(16)}
 				outfile[o+d] = file.subarray(sound_start+region_sample_offset, sample_end)[d]; // write the sample data
 			}
 
-			o += sample_length - 0x20; // not sure why extra 32 bytes but cut em out
+			o += sample_length;
 
 			outfile = outfile.subarray(0, o);
 			
@@ -1380,7 +1380,7 @@ Sample Region Length: 0x${sound_length.toString(16)}
 			injectionmis.type = "file";
 			injectionmis.addEventListener("change", async () => {
 				// size check
-				if(injectionmis.files[0].size > sample_length) {
+				if(injectionmis.files[0].size > sample_length + 0x30) {
 					// throw error
 					console.log("too big: " + injectionmis.files[0].size + " > " + sample_length);
 					injection_label2.textContent = " Error: Selected injection exceeds the original size of the sound.";
