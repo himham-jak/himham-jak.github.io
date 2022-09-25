@@ -1290,12 +1290,12 @@ Sample Region Length: 0x${sound_length.toString(16)}
 			let region_text = `  ==Notes ${region_note_start}-${region_note_end}==\n`;
 			region_text += `  Volume: ${region_volume}\n`;
 			region_text += `  Pitch Bytes: ${region_pitch_a} ${region_pitch_b}\n`;
-			region_text += `  Sample Offset: 0x${(region_sample_offset+sound_start).toString(16)}\n`;
-			region_text += `  Sample Length: 0x${sample_length.toString(16)}\n`;
-			region_text += `  Sample End: 0x${sample_end.toString(16)}\n`;
 			region_text += `  ADSR1: 0x${region_adsr1.toString(16).padStart(4,0)}\n`;
 			region_text += `  ADSR2: 0x${region_adsr2.toString(16).padStart(4,0)}\n`;
 			region_text += `  Flags: 0x${region_flags.toString(16).padStart(4,0)}\n`;
+			region_text += `  Sample Offset: 0x${(region_sample_offset+sound_start).toString(16)}\n`;
+			region_text += `  Sample Length: 0x${sample_length.toString(16)}\n`;
+			region_text += `  Sample End: 0x${sample_end.toString(16)}\n`;
 
 			region_text += `  Info: [${[...file.subarray(region_offset+j*0x18,region_offset+(j+1)*0x18)].map(number => {return number.toString(16).padStart(2,'0')}).join(" ")}]\n`;
 			region_elem.textContent = region_text;
