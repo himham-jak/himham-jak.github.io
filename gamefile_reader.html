@@ -1301,6 +1301,16 @@ Sample Region Length: 0x${sound_length.toString(16)}
 			region_elem.textContent = region_text;
 			contentelem.appendChild(region_elem);
 			
+			let test_elem = document.createElement("pre");
+			test_elem.textContent = `  Volume: ${region_volume}\n`;
+			test_elem.addEventListener("mouseover", (e) => {
+				for(let othersel of document.querySelectorAll(".highlighted")) {
+					othersel.classList.remove("highlighted");
+					}
+				test_elem.classList.add("highlighted");
+			});
+			contentelem.appendChild(test_elem);
+			
 			let button = document.createElement("input");
 			button.type = "button";
 			button.value = "Play";
@@ -4635,6 +4645,10 @@ canvas {
 #fileoptions {
 	transform: rotateY(180deg);
 	overflow: auto;
+}
+
+.highlighted {
+	background-color: yellow;
 }
 
 </style>
