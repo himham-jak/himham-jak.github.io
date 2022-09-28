@@ -3,32 +3,23 @@
 TODO
 
 Have tabs stay loaded, just hidden to save load time.
-Save modified files
+Highlight the bytes that correspond to values when hovered over
 
 MUS
 	Inject MID
-		Decide on reasonable maximum size?
-	Save Instruments as MIS (musical instrument sample)
-		Check out structure in HxD
-		Create file structure
-		Write save function
-	Inject MIS
-		Decide on reasonable maximum size?
+	Remove upper limit on size of MIS
 
 SBK
-	Fix type system in Jak 1 SBK
+	Fix grain type system in Jak 1 SBK
 		Why are there 3 types?
 		Why do some sounds end up 80hr long?
 
 VAG
-	Stop Button
-		Figure out how to stop vagp while playing
-	Inject ADPCM
-		Expand to double the size of the largest adpcm?
-		Test injection
+	Remove upper limit on size of ADPCM
 	Inject WAV
 		Probably not feasible
 		Would need to write convertor in browser
+		May be possible in the decompiler tho
 	Support Jak II VAG
 		Check format differences in HxD
 -->
@@ -670,6 +661,7 @@ async function set_sbv2(blob, filename) {
 	
 	let sound_start = dv.getUint32(16, true);
 	let sound_length = dv.getUint32(20, true);
+	let sound_end = sound_start+sound_length;
 	let mmid_start = dv.getUint32(24, true);
 	
 	let sbv2_start = 0x20;
@@ -693,6 +685,7 @@ async function set_sbv2(blob, filename) {
 	let num_midis = sbv2.tracks.length;
 	for(let i = 1; i < num_midis; i++) { // skip track 0
 		let track = sbv2.tracks[i];
+			console.log(track.data_end-track.data_offset);
 		
 		let tempo = track.tempo;
 		let ticks_per_qnote = track.ticks_per_qnote;
@@ -768,7 +761,8 @@ async function set_sbv2(blob, filename) {
 		play_button.addEventListener("click", () => {
 			if(stop_playing) { stop_playing(); stop_playing = null; }
 			
-			let player = new MidiPlayer(sbv2, track, audio_context);
+			do_log(sbv2);
+			let player = new MidiPlayer(sbv2, sbv2.tracks[i], audio_context);
 			player.channel_mask = calc_channel_mask();
 			player.reverb_enabled = reverb_toggle.checked;
 			player.play();
@@ -953,12 +947,14 @@ async function set_sbv2(blob, filename) {
 			save_button.value = "Save Modifications";
 
 			// overwrite the data
-			//let vial = injectionmid.files[0].slice(); // this slice turns the file into a blob
-			//vial  = new Uint8Array(await new Response(vial).arrayBuffer()); // now make it a uint8array
-			//file = await inject_data(file, vial, sound_start, sound_end);
+			let vial = injectionmid.files[0].slice(); // this slice turns the file into a blob
+			vial  = new Uint8Array(await new Response(vial).arrayBuffer()); // now make it a uint8array
+			//vial = mid_to_mus(vial); // convert midi events to mus events
+			file = await inject_data(file, vial, track.data_offset, track.data_end);
 
 			// reassign the sound to the injection
 			sbv2 = new SBv2Decoder(file);
+			do_log(sbv2);
 		});
 		contentelem.appendChild(injectionmid);
 		injectionmid.style.display = "none";
@@ -1819,17 +1815,21 @@ class SBv2Decoder {
 		let num_midis = is_single_track ? 1 : file[mmid_start+0x17];
 		let version = is_single_track ? 1 : file[mmid_start + 0x14];
 		for(let i = 0; i < num_midis; i++) {
-			let midi_struct_offset = is_single_track ? (mmid_start + 0x10) : (dv.getUint32(mmid_start+0x20+i*4, true) + 0x10 + mmid_start);
+			let midi_struct_offset = mmid_start + 0x10 + (is_single_track ? 0 : dv.getUint32(mmid_start+0x20+i*4, true));
 			let midi_substruct_offset = midi_struct_offset + (version == 0x1 ? 0x1C : 0x28);
+			console.log(midi_substruct_offset + 0x48);
 			
 			let tempo = 100 / dv.getUint32(is_single_track ? midi_struct_offset+0x20 : midi_substruct_offset+0x48, true) * 600000;
+			console.log(tempo);
 			let ticks_per_qnote = dv.getUint32(is_single_track ? (midi_struct_offset+0x24) : (midi_substruct_offset+0x54), true);
 			let data_offset = dv.getUint32(is_single_track ? midi_struct_offset+0x18 : midi_substruct_offset+0x38, true) + midi_struct_offset;
+			let data_end = data_offset;
 			let track = {
 				tempo,
 				ticks_per_qnote,
 				events: [],
-				data_offset
+				data_offset,
+				data_end
 			};
 			this.tracks.push(track);
 			
@@ -1953,6 +1953,7 @@ class SBv2Decoder {
 								seconds,
 								ticks
 							});
+							track.data_end = current_midi_pointer;
 							break;
 						} else {
 							console.warn(`Unrecognized meta 0x${meta_type.toString(16)}`);
