@@ -949,11 +949,14 @@ async function set_sbv2(blob, filename) {
 			// overwrite the data
 			let vial = injectionmid.files[0].slice(); // this slice turns the file into a blob
 			vial  = new Uint8Array(await new Response(vial).arrayBuffer()); // now make it a uint8array
-			//vial = mid_to_mus(vial); // convert midi events to mus events
+			vial = mid_to_mus(vial); // convert midi events to mus events
 			file = await inject_data(file, vial, track.data_offset, track.data_end);
 
 			// reassign the sound to the injection
 			sbv2 = new SBv2Decoder(file);
+			// pull out values from the midi to pass to decoder
+			//sbv2.tracks[i].tempo = vial[?]; // tempo (not sure how to find, considering it's not always set, maybe seek for it and ignore if not found)
+			sbv2.tracks[i].ticks_per_qnote = vial[0xC]+1; // ticks_per_qnote
 			do_log(sbv2);
 		});
 		contentelem.appendChild(injectionmid);
@@ -2114,6 +2117,17 @@ async function inject_data(file, injection, start, end) {
 	}
 	for (i; i < end; i++) { // fill in the extra with 0 if needed
 		file[i] = 0;
+	}
+	return file;
+}
+
+async function mid_to_mus(file) {
+	// change standard midi events to sony standard
+	for (i = 0x16; i < file.length; i++) {
+		event_type = file[i];
+		if((event_type & 0xF0) == 0x80) {
+			file[i] = 0xD0 | (event_type & 0xF);
+		}
 	}
 	return file;
 }
