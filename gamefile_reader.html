@@ -28,16 +28,14 @@ VAG
 
 <html>
 <head>
-<title>
-	Jak Audio Editor
-</title>
+<title>Jak Audio Editor</title>
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="FileSaver.js"></script>
 <script src="three.min.js"></script>
 <script>
-if(window.location.protocol == "file:") {
-		document.title = "Jak Audio Editor (Local)";
+if(window.location.protocol == "file:") { // if I'm running the page locally ("file:" vs "http:"), change the title to indicate so.
+		document.title += " (Local)";
 }
 
 let logging_enabled = true;
