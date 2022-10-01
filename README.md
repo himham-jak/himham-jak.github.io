@@ -38,3 +38,4 @@ Mis is a custom format used by this project. It is composed of a headerless Musi
 - Jak 1 VAGWAD doesn't have a working stop button.
 - Jak 1 COMMON.MUS fails to open.
 - Jak 1 VAGWAD can only inject sounds smaller than the sound they're replacing.
+- Jak 1 MUS can only inject sounds MUCH smaller than the sound they're replacing.
