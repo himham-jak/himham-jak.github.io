@@ -13,7 +13,7 @@ The editor currently supports the following actions:
 | Jak II SBK     |           ✔️  |           ✔️  |           ✔️  |           ❌  |           -    |           ❌  |
 | Jak 3 SBK      |           ❌  |           ❌  |           ❌  |           ❌  |           -    |           ❌  |
 | Jak 1 MUS      |           ✔️  |           ✔️  |           ✔️  |           ❌  |           ✔️  |           ✔️  |
-| Jak II MUS     |           ✔️  |           ✔️  |           ✔️  |           ❌  |           ❌  |           ✔️  |
+| Jak II MUS     |           ✔️  |           ✔️  |           ✔️  |           ❌  |           ✔️  |           ✔️  |
 | Jak X Anything |           ❌  |           ❌  |           ❌  |           ❌  |           -    |           ❌  |
 
 ## Tips:
@@ -36,6 +36,6 @@ Mis is a custom format used by this project. It is composed of a headerless Musi
 ## Known Issues:
 - Jak 1 SBK is not read perfectly. There should be only 2 types of grains, but there are 3. Also some sounds read as 80hr long.
 - Jak 1 VAGWAD doesn't have a working stop button.
-- Jak 1 COMMON.MUS fails to open.
+- Jak 1 COMMON.SBK fails to open.
 - Jak 1 VAGWAD can only inject sounds smaller than the sound they're replacing.
 - Jak 1 MUS can only inject sounds smaller than the sound they're replacing.
