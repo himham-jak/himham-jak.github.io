@@ -1,37 +1,38 @@
-## Welcome to GitHub Pages
+# Jak Modding Resource (WIP)
 
-You can use the [editor on GitHub](https://github.com/himham-jak/himham-jak.github.io/edit/main/index.md) to maintain and preview the content for your website in Markdown files.
+## Mod Launcher
+- Link to guide
+- Link to launcher
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Texture Mods
+- Link to guide
+- Links to texture packs
 
-### Markdown
+## Sound Mods
+- Link to Jak Audio Tool
+- Link to guide on making adpcm
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Code Mods
+- Object References
+  - Jak
+- UI Editing
+  - HUD Editing
+  - Progress Editing
+- Fun Things
+  - Gravity
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```lisp
+(defmethod draw-hud hud ((obj hud))
+  (when (and (not (hidden? obj)) (not (paused?)))
+    (dotimes (s5-0 (-> obj nb-of-particles))
+      (when (!= s5-0 (-> obj skip-particle))
+        (if (or (!= (-> obj particles 0 pos x) 0.0) (!= (-> obj particles 0 pos y) 0.0))
+            (spawn (-> obj particles s5-0 part) *null-vector*)
+            )
+        )
+      )
+    )
+  0
+  (none)
+  )
 ```
-
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/himham-jak/himham-jak.github.io/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
